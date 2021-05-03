@@ -1,5 +1,4 @@
 // Knex
-// Knex
 const knex = require("knex")({
   client: "pg",
   connection: {
@@ -15,17 +14,18 @@ const { Model } = require("objection");
 Model.knex(knex);
 
 // Models
-const User = require("./api/models/User");
-const Driver = require("./api/models/Driver");
-const Location = require("./api/models/Location");
-const Ride = require("./api/models/Ride");
-const State = require("./api/models/State");
-const Vehicle = require("./api/models/Vehicle");
-const VehicleType = require("./api/models/VehicleType");
+const User = require("../api/models/User");
+const Driver = require("../api/models/Driver");
+const Location = require("../api/models/Location");
+const Ride = require("../api/models/Ride");
+const State = require("../api/models/State");
+const Vehicle = require("../api/models/Vehicle");
+const VehicleType = require("../api/models/VehicleType");
 
 // Hapi
 const Joi = require("@hapi/joi"); // Input validation
 const Hapi = require("@hapi/hapi"); // Server
+const { query } = require("../api/models/Ride");
 
 const server = Hapi.server({
   host: "localhost",
@@ -49,19 +49,105 @@ async function init() {
 
   //Configure routes
   server.route([
-      {
-          method: 'GET',
-          path: '/rides',
-          config: {
-              description: "Search for rides",
-              validate: {
-                payload: Joi.string().required()
-              },
-          },
-          handler: async (request, h) => {
-              const rides = await Location.query().withGraphFetched('incomingRide').where('name', request.payload);
-          }
+
+    {
+      method: "GET",
+      path: '/',
+      handler: async (request, h) => {
+        return await User.query().select();
       }
+    },
+
+    {
+      method: 'GET',
+      path: '/rides/{searchKey}/{type}',
+      config: {
+        description: "Search for rides",
+        validate: {
+          params: Joi.object({
+            type: Joi.string().required(),
+            searchKey: Joi.string().required()
+          })
+        },
+      },
+      handler: async (request, h) => {
+        const type = request.params.type;
+        const searchKey = request.params.searchKey;
+        let returnRides = [];
+
+        if (type === 'name') {
+
+          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+            builder.where( 'name', 'like', '%'+searchKey+'%');
+          });
+          rides.forEach(ride => {
+            if (ride.toLocation) {
+              returnRides.push(ride);
+            }
+          });
+          if (!returnRides.length) {
+            return {
+              ok: false
+            }
+          } else {
+            return {
+              ok: true,
+              msge: returnRides
+            }
+          };
+
+        } else if (type === 'address') {
+
+          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+            builder.where('address', 'like', '%'+searchKey+'%');
+          });
+          rides.forEach(ride => {
+            if (ride.toLocation) {
+              returnRides.push(ride);
+            }
+          });
+          return returnRides;
+
+        } else if (type === 'city') {
+
+          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+            builder.where('city', 'like', '%'+searchKey+'%');
+          });
+          rides.forEach(ride => {
+            if (ride.toLocation) {
+              returnRides.push(ride);
+            }
+          });
+          return returnRides;
+
+        } else if (type === 'state') {
+
+          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+            builder.where('state', 'like', '%'+searchKey+'%');
+          });
+          rides.forEach(ride => {
+            if (ride.toLocation) {
+              returnRides.push(ride);
+            }
+          });
+          return returnRides;
+
+        } else if (type === 'zip') {
+
+          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+            builder.where('zip', 'like', '%'+searchKey+'%');
+          });
+          rides.forEach(ride => {
+            if (ride.toLocation) {
+              returnRides.push(ride);
+            }
+          });
+          return returnRides;
+
+        } 
+
+      }
+    }
   ]);
 
   //Start the server
@@ -70,4 +156,3 @@ async function init() {
 
 // Go!
 init();
-
