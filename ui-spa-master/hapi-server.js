@@ -1,20 +1,27 @@
 // Knex
+// Knex
 const knex = require("knex")({
   client: "pg",
   connection: {
-    host: "localhost", // PostgreSQL server
-    user: "tom", // Your user name
-    password: "", // Your password
-    database: "cos-243-ui-spa", // Your database name
+    host: "faraday.cse.taylor.edu",
+    user: "jackson_miller",
+    password: "xopijuti",
+    database: "jackson_miller"
   },
 });
 
 // Objection
-const objection = require("objection");
-objection.Model.knex(knex);
+const { Model } = require("objection");
+Model.knex(knex);
 
 // Models
-const Account = require("./models/Account");
+const User = require("./api/models/User");
+const Driver = require("./api/models/Driver");
+const Location = require("./api/models/Location");
+const Ride = require("./api/models/Ride");
+const State = require("./api/models/State");
+const Vehicle = require("./api/models/Vehicle");
+const VehicleType = require("./api/models/VehicleType");
 
 // Hapi
 const Joi = require("@hapi/joi"); // Input validation
@@ -40,133 +47,27 @@ async function init() {
     },
   });
 
-  // Configure routes.
+  //Configure routes
   server.route([
-    {
-      method: "POST",
-      path: "/accounts",
-      config: {
-        description: "Sign up for an account",
-        validate: {
-          payload: Joi.object({
-            firstName: Joi.string().required(),
-            lastName: Joi.string().required(),
-            email: Joi.string().email().required(),
-            password: Joi.string().required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        const existingAccount = await Account.query()
-          .where("email", request.payload.email)
-          .first();
-        if (existingAccount) {
-          return {
-            ok: false,
-            msge: `Account with email '${request.payload.email}' is already in use`,
-          };
-        }
-
-        const newAccount = await Account.query().insert({
-          first_name: request.payload.firstName,
-          last_name: request.payload.lastName,
-          email: request.payload.email,
-          password: request.payload.password,
-        });
-
-        if (newAccount) {
-          return {
-            ok: true,
-            msge: `Created account '${request.payload.email}'`,
-          };
-        } else {
-          return {
-            ok: false,
-            msge: `Couldn't create account with email '${request.payload.email}'`,
-          };
-        }
-      },
-    },
-
-    {
-      method: "GET",
-      path: "/accounts",
-      config: {
-        description: "Retrieve all accounts",
-      },
-      handler: (request, h) => {
-        return Account.query();
-      },
-    },
-
-    {
-      method: "DELETE",
-      path: "/accounts/{id}",
-      config: {
-        description: "Delete an account",
-      },
-      handler: (request, h) => {
-        return Account.query()
-          .deleteById(request.params.id)
-          .then((rowsDeleted) => {
-            if (rowsDeleted === 1) {
-              return {
-                ok: true,
-                msge: `Deleted account with ID '${request.params.id}'`,
-              };
-            } else {
-              return {
-                ok: false,
-                msge: `Couldn't delete account with ID '${request.params.id}'`,
-              };
-            }
-          });
-      },
-    },
-
-    {
-      method: "POST",
-      path: "/login",
-      config: {
-        description: "Log in",
-        validate: {
-          payload: Joi.object({
-            email: Joi.string().email().required(),
-            password: Joi.string().min(8).required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        const account = await Account.query()
-          .where("email", request.payload.email)
-          .first();
-        if (
-          account &&
-          (await account.verifyPassword(request.payload.password))
-        ) {
-          return {
-            ok: true,
-            msge: `Logged in successfully as '${request.payload.email}'`,
-            details: {
-              id: account.id,
-              firstName: account.first_name,
-              lastName: account.last_name,
-              email: account.email,
-            },
-          };
-        } else {
-          return {
-            ok: false,
-            msge: "Invalid email or password",
-          };
-        }
-      },
-    },
+      {
+          method: 'GET',
+          path: '/rides',
+          config: {
+              description: "Search for rides",
+              validate: {
+                payload: Joi.string().required()
+              },
+          },
+          handler: async (request, h) => {
+              const rides = await Location.query().withGraphFetched('incomingRide').where('name', request.payload);
+          }
+      }
   ]);
 
-  // Start the server.
+  //Start the server
   await server.start();
 }
 
 // Go!
 init();
+
