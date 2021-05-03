@@ -9,7 +9,7 @@ const knex = require("knex")({
   },
 });
 
-// Objections
+// Objection
 const { Model } = require("objection");
 Model.knex(knex);
 
@@ -75,10 +75,10 @@ async function init() {
         const searchKey = request.params.searchKey;
         let returnRides = [];
 
-        if (type === 'name') {
+        //if (type === 'name') {
 
           const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where( 'name', 'like', '%'+searchKey+'%');
+            builder.where( type , 'like', '%'+searchKey+'%' );
           });
           rides.forEach(ride => {
             if (ride.toLocation) {
@@ -87,7 +87,8 @@ async function init() {
           });
           if (!returnRides.length) {
             return {
-              ok: false
+              ok: false,
+              msge: `Nothing for ${type} and ${searchKey}`
             }
           } else {
             return {
@@ -96,7 +97,7 @@ async function init() {
             }
           };
 
-        } else if (type === 'address') {
+        /*} else if (type === 'address') {
 
           const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
             builder.where('address', 'like', '%'+searchKey+'%');
@@ -145,7 +146,7 @@ async function init() {
           return returnRides;
 
         } 
-
+*/
       }
     }
   ]);
