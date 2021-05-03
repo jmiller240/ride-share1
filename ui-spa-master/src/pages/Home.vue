@@ -48,13 +48,14 @@
 
 <script>
   export default {
+    name: 'Home', 
+
     data: () => {
       return {
         searchOptions: ['Name', 'City', 'State', 'Address', 'Zip Code'],
 
         searchKey: '',  
         searchType: '',
-        succesfulSearch: false,
 
         dialogHeader: "<no dialogHeader>",
         dialogText: "<no dialogText>",
@@ -63,18 +64,9 @@
     },
     methods: {
       search() {
-        let sendType = this.searchType;
-        this.$axios
-          .get(`/rides/${this.searchKey}/${sendType.toLowerCase()}`)
-          .then(result => {
-            if (result.data.ok) {
-              this.showDialog("Success", result.data.msge);
-              this.successfulSearch = true;
-            } else {
-              this.showDialog("Sorry", result.data.msge);
-            }
-          })
-        .catch((err) => this.showDialog("Failed", err));
+        this.$store.commit('newSearchKey', this.searchKey);
+        this.$store.commit('newSearchType', this.searchType);
+        this.$router.push({ name: 'rides' });
       },
       showDialog(header, text) {
         this.dialogHeader = header;
