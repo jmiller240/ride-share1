@@ -52,7 +52,7 @@
 
     data: () => {
       return {
-        searchOptions: ['Name', 'City', 'State', 'Address', 'Zip Code'],
+        searchOptions: ['name', 'city', 'state', 'address', 'zipCode'],
 
         searchKey: '',  
         searchType: '',

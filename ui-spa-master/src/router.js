@@ -6,6 +6,8 @@ import SignIn from "./pages/SignIn.vue";
 import SignUp from "./pages/SignUp.vue";
 import About from "./pages/About.vue";
 import Accounts from "./pages/Accounts.vue";
+import MyRides from "./pages/MyRides.vue";
+import DriverDetails from "./pages/DriverDetails.vue"
 
 Vue.use(Router);
 
@@ -14,6 +16,9 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     { name: "home-page", path: "/", component: Home },
+    { name: 'myRides', path: '/myRides', component: MyRides },
+    { name: 'driverDetails', path: '/driverDetails', component: DriverDetails },
+
     { name: "sign-up", path: "/sign-up", component: SignUp },
     { name: "sign-in", path: "/sign-in", component: SignIn },
     { name: "about-us", path: "/about-us", component: About },
