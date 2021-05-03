@@ -16,7 +16,9 @@ export default new Vuex.Store({
   // Cannot update state directly; use a `mutation` (below).
   // Access in components as `this.$store.state.currentAccount`
   state: {
-    currentAccount: null
+    currentAccount: null,
+    searchKey: '',
+    searchType: '',
   },
 
   // A "getter" returns a computed property from the store, similar
@@ -26,6 +28,12 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn(state) {
       return state.currentAccount !== null;
+    },
+    getSearchKey(state) {
+      return state.searchKey !== '';
+    },
+    getSearchType(state) {
+      return state.searchType !== '';
     }
   },
 
@@ -38,6 +46,12 @@ export default new Vuex.Store({
     },
     logOut(state) {
       state.currentAccount = null;
+    },
+    newSearchKey(state, searchKeyInput) {
+      state.searchKey = searchKeyInput;
+    },
+    newSearchType(state, searchTypeInput) {
+      state.searchType = searchTypeInput;
     }
   }
 });
