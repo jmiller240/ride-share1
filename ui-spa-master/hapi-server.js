@@ -9,7 +9,9 @@ const knex = require("knex")({
   },
 });
 
-// Objection
+console.log(knex.select().from('user'));
+
+// Objections
 const { Model } = require("objection");
 Model.knex(knex);
 
