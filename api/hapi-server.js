@@ -122,7 +122,9 @@ async function init() {
         const user = await User.query().withGraphFetched('ride').where('id', userID);
         const ride = await Ride.query().withGraphFetched('vehicle').where('id', rideID);
 
-        // cant join ride twice, increment passengerCount on join
+        const userRide = await knex.select().from('passenger')
+
+        // cant join ride twice
         if (user.length !== 1) {
           return {
             ok: false,
@@ -145,8 +147,9 @@ async function init() {
           }
         } else {
           await Ride.relatedQuery('user').for(rideID).relate(userID);
-          let passCount = await Ride.query().select('passengerCount').where('id', rideID);
-          passCount[0]++;
+          let passCountArr = await Ride.query().select().where('id', rideID);
+          let passCount = passCountArr[0].passengerCount;
+          ++passCount;
           await Ride.query().patch({ passengerCount: passCount});
           return {
             ok: true,
