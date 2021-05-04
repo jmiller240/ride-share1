@@ -1,10 +1,10 @@
 {
-  "name": "ui-spa",
+  "name": "ride-share",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "ui-watch": "vue-cli-service serve",
-    "api-watch": "nodemon --ignore ./node_modules ./ui-spa-master/hapi-server.js",
+    "ui-watch": "cd ui && vue-cli-service serve",
+    "api-watch": "nodemon --ignore ./node_modules ./api/hapi-server.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
