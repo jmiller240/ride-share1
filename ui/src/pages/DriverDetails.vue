@@ -76,7 +76,18 @@ export default {
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));
-        }
+        },
+        showDialog(header, text) {
+            this.dialogHeader = header;
+            this.dialogText = text;
+            this.dialogVisible = true;
+        },
+        hideDialog() {
+            this.dialogVisible = false;
+            if (this.accountCreated) {
+            this.$router.push({ name: "home-page" });
+            }
+        },
     },
 }
 </script>

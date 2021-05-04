@@ -7,7 +7,8 @@ import SignUp from "./pages/SignUp.vue";
 import About from "./pages/About.vue";
 import Accounts from "./pages/Accounts.vue";
 import MyRides from "./pages/MyRides.vue";
-import DriverDetails from "./pages/DriverDetails.vue"
+import DriverDetails from "./pages/DriverDetails.vue";
+import Rides from "./pages/Rides.vue";
 
 Vue.use(Router);
 
@@ -18,6 +19,7 @@ export default new Router({
     { name: "home-page", path: "/", component: Home },
     { name: 'myRides', path: '/myRides', component: MyRides },
     { name: 'driverDetails', path: '/driverDetails', component: DriverDetails },
+    { name: 'rides', path: '/rides', component: Rides },
 
     { name: "sign-up", path: "/sign-up", component: SignUp },
     { name: "sign-in", path: "/sign-in", component: SignIn },
