@@ -122,6 +122,8 @@ async function init() {
         const user = await User.query().withGraphFetched('ride').where('id', userID);
         const ride = await Ride.query().withGraphFetched('vehicle').where('id', rideID);
 
+        const userRide = await knex.select().from('passenger')
+
         // cant join ride twice
         if (user.length !== 1) {
           return {
