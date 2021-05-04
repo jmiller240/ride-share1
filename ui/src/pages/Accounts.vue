@@ -103,9 +103,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.currentAccount {
-  background: lightcoral;
-}
-</style>

@@ -4,7 +4,7 @@
             <h4 class='display-1'>Rides</h4>
 
             <v-data-table
-                v-if='rides'
+                v-if='rides.ok'
                 class='elevation-1'
                 :headers='headers'
                 :items='rides'
@@ -12,11 +12,14 @@
                 <template v-slot:item="{ item }">
                     <tr>
                         <td>{{ item.name }}</td>
+                        <td>{{ item.date }}</td>
+                        <!--td>{{ item.capacity }}</td :disabled='item.capacity < item.passengerCount'-->
+                        <td>{{ item.passengerCount }}</td>
                         <td>{{ item.state }}</td>
                         <td>{{ item.city }}</td>
                         <td>{{ item.address }}</td>
                         <td>{{ item.zipCode }}</td>
-                        <v-btn @click='join'>Join Ride</v-btn>
+                        <v-btn @click='joinRide(item.id)'>Join Ride</v-btn>
                     </tr>
                 </template>
             </v-data-table>
@@ -36,12 +39,16 @@ export default {
         return {
             headers: [
                 { text: 'Ride', align: 'start', sortable: false, value: 'name' },
+                { text: 'Date', value: 'date' },
+                //{ text: 'Capacity', value: 'capacity' },
+                { text: 'Passengers', value: 'passengerCount' },
+                { text: 'City', value: 'city' },
                 { text: 'State', value: 'state' },
                 { text: 'Address', value: 'address' },
                 { text: 'Zip Code', value: 'zipCode' },
             ],
             rides: [],
-        }
+        };
     },
     mounted() {
         let sendType = this.$store.state.searchType;
@@ -49,16 +56,32 @@ export default {
         this.$axios
           .get(`/rides/${sendKey}/${sendType.toLowerCase()}`)
           .then(result => {
-            if (result.data.ok) {
-              this.showDialog("Success", result.data.msge);
+            if (result.ok) {
+              this.showDialog("Success", result.msge);
               this.successfulSearch = true;
               //What is returned?
-              this.rides = result.data;
+              this.rides = result.msge;
             } else {
-              this.showDialog("Sorry", result.data.msge);
+              this.showDialog("Sorry", result.msge);
             }
           })
         .catch((err) => this.showDialog("Failed", err));
+    },
+    methods: {
+        joinRide(id) {
+            this.$axios
+                .put(`/joinRide/${this.$store.state.currentUser}/${id}`)
+                .then(result => {
+                    if( result.ok ) {
+                        this.showDialog("Success", result.msge);
+                        //What is returned?
+                        this.rides = result.msge;
+                    } else {
+                        this.showDialog("Sorry", result.msge);
+                    }
+                })
+                .catch((err) => this.showDialog("Failed", err));
+        }
     }
 }
 </script>

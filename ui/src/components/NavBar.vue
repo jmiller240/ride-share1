@@ -9,6 +9,8 @@
     <v-spacer></v-spacer>
 
     <v-btn text v-bind:to="{ name: 'about-us' }">About Us</v-btn>
+    <v-btn text :to="{ name: 'myRides' }">My Rides</v-btn>
+    <v-btn text :to="{ name: 'driverDetails' }">Driver Details</v-btn>
 
     <v-menu v-if="isLoggedIn" offset-y>
       <template v-slot:activator="{ on }">

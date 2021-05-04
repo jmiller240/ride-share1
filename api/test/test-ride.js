@@ -42,10 +42,12 @@ async function main() {
   //await update();
   //await deleteTest();
 
-  const ride = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-    builder.where('name', 'The Bullpen');
-  });
-  console.log(ride);
+  let passCount = await Ride.query().select('passengerCount').where('id', 5);
+  console.log(passCount[0]);
+  passCount[0]++;
+  console.log(passCount[0]);
+
+
   
    knex.destroy();
 }

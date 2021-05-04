@@ -59,7 +59,15 @@ async function init() {
 
     {
       method: "GET",
-      path: "/rides/{searchKey}/{type}",
+      path: '/rides/{userID}',
+      handler: async (request, h) => {
+        return await Ride.withGraphFetched('user');
+      }
+    },
+
+    {
+      method: 'GET',
+      path: '/rides/{searchKey}/{type}',
       config: {
         description: "Search for rides",
         validate: {
@@ -74,14 +82,10 @@ async function init() {
         const searchKey = request.params.searchKey;
         let returnRides = [];
 
-        //if (type === 'name') {
-
-        const rides = await Ride.query()
-          .withGraphFetched("toLocation")
-          .modifyGraph("toLocation", (builder) => {
-            builder.where(type, "like", "%" + searchKey + "%");
-          });
-        rides.forEach((ride) => {
+        const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
+          builder.where(type, 'like', '%' + searchKey + '%');
+        });
+        rides.forEach(ride => {
           if (ride.toLocation) {
             returnRides.push(ride);
           }
@@ -89,67 +93,70 @@ async function init() {
         if (!returnRides.length) {
           return {
             ok: false,
-            msge: `Nothing for ${type} and ${searchKey}`,
-          };
+            msge: `Nothing for ${type} and ${searchKey}`
+          }
         } else {
           return {
             ok: true,
-            msge: returnRides,
-          };
-        }
-
-        /*} else if (type === 'address') {
-
-          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where('address', 'like', '%'+searchKey+'%');
-          });
-          rides.forEach(ride => {
-            if (ride.toLocation) {
-              returnRides.push(ride);
-            }
-          });
-          return returnRides;
-
-        } else if (type === 'city') {
-
-          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where('city', 'like', '%'+searchKey+'%');
-          });
-          rides.forEach(ride => {
-            if (ride.toLocation) {
-              returnRides.push(ride);
-            }
-          });
-          return returnRides;
-
-        } else if (type === 'state') {
-
-          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where('state', 'like', '%'+searchKey+'%');
-          });
-          rides.forEach(ride => {
-            if (ride.toLocation) {
-              returnRides.push(ride);
-            }
-          });
-          return returnRides;
-
-        } else if (type === 'zip') {
-
-          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where('zip', 'like', '%'+searchKey+'%');
-          });
-          rides.forEach(ride => {
-            if (ride.toLocation) {
-              returnRides.push(ride);
-            }
-          });
-          return returnRides;
-
-        } 
-*/
-      },
+            msge: returnRides
+          }
+        };
+      }
     },
+
+    {
+      method: 'PUT',
+      path: '/joinRide',
+      config: {
+        description: 'User can join a ride',
+        validate: {
+          payload: Joi.object({
+            user: Joi.number().integer().min(1),
+            ride: Joi.number().integer().min(1)
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const userID = request.payload.user;
+        const rideID = request.payload.ride;
+        const user = await User.query().withGraphFetched('ride').where('id', userID);
+        const ride = await Ride.query().withGraphFetched('vehicle').where('id', rideID);
+
+        // cant join ride twice, increment passengerCount on join
+        if (user.length !== 1) {
+          return {
+            ok: false,
+            msge: `User with id ${userID} does not exist`
+          }
+        } else if (ride.length !== 1) {
+          return {
+            ok: false,
+            msge: `Ride with id ${rideID} does not exist`
+          }
+        } else if (user[0].ride.length >= 1) {
+          return {
+            ok: false,
+            msge: `User with id ${userID} is already signed up for ride ${rideID}`
+          }
+        } else if ( ride[0].passengerCount >= ride[0].vehicle.capacity ) {
+          return {
+            ok: false,
+            msge: `Ride with id ${rideID} is full`
+          }
+        } else {
+          await Ride.relatedQuery('user').for(rideID).relate(userID);
+          let passCount = await Ride.query().select('passengerCount').where('id', rideID);
+          passCount[0]++;
+          await Ride.query().patch({ passengerCount: passCount});
+          return {
+            ok: true,
+            msge: `User ${userID} has successfuly joined ride ${rideID}`
+          }
+        }
+      },      
+    },
+
+    
   ]);
 
   //Start the server

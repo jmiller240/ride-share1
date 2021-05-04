@@ -41,10 +41,10 @@ async function main() {
   //await update();
   //await deleteTest(9);
 
-  const drivers = await User.query().withGraphFetched('driver');
-  console.log(drivers);
+  const pass = await User.query().withGraphFetched('ride').where('id', 10);
+  console.log(pass);
   
-   knex.destroy();
+  knex.destroy();
 }
 
 process.on("unhandledRejection", (err) => {
