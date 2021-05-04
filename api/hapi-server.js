@@ -5,7 +5,7 @@ const knex = require("knex")({
     host: "faraday.cse.taylor.edu",
     user: "jackson_miller",
     password: "xopijuti",
-    database: "jackson_miller"
+    database: "jackson_miller",
   },
 });
 
@@ -14,13 +14,13 @@ const { Model } = require("objection");
 Model.knex(knex);
 
 // Models
-const User = require("../api/models/User");
-const Driver = require("../api/models/Driver");
-const Location = require("../api/models/Location");
-const Ride = require("../api/models/Ride");
-const State = require("../api/models/State");
-const Vehicle = require("../api/models/Vehicle");
-const VehicleType = require("../api/models/VehicleType");
+const User = require("./models/User");
+const Driver = require("./models/Driver");
+const Location = require("./models/Location");
+const Ride = require("./models/Ride");
+const State = require("./models/State");
+const Vehicle = require("./models/Vehicle");
+const VehicleType = require("./models/VehicleType");
 
 // Hapi
 const Joi = require("@hapi/joi"); // Input validation
@@ -49,25 +49,24 @@ async function init() {
 
   //Configure routes
   server.route([
-
     {
       method: "GET",
-      path: '/',
+      path: "/",
       handler: async (request, h) => {
         return await User.query().select();
-      }
+      },
     },
 
     {
-      method: 'GET',
-      path: '/rides/{searchKey}/{type}',
+      method: "GET",
+      path: "/rides/{searchKey}/{type}",
       config: {
         description: "Search for rides",
         validate: {
           params: Joi.object({
             type: Joi.string().required(),
-            searchKey: Joi.string().required()
-          })
+            searchKey: Joi.string().required(),
+          }),
         },
       },
       handler: async (request, h) => {
@@ -77,25 +76,27 @@ async function init() {
 
         //if (type === 'name') {
 
-          const rides = await Ride.query().withGraphFetched('toLocation').modifyGraph('toLocation', builder => {
-            builder.where( type , 'like', '%'+searchKey+'%' );
+        const rides = await Ride.query()
+          .withGraphFetched("toLocation")
+          .modifyGraph("toLocation", (builder) => {
+            builder.where(type, "like", "%" + searchKey + "%");
           });
-          rides.forEach(ride => {
-            if (ride.toLocation) {
-              returnRides.push(ride);
-            }
-          });
-          if (!returnRides.length) {
-            return {
-              ok: false,
-              msge: `Nothing for ${type} and ${searchKey}`
-            }
-          } else {
-            return {
-              ok: true,
-              msge: returnRides
-            }
+        rides.forEach((ride) => {
+          if (ride.toLocation) {
+            returnRides.push(ride);
+          }
+        });
+        if (!returnRides.length) {
+          return {
+            ok: false,
+            msge: `Nothing for ${type} and ${searchKey}`,
           };
+        } else {
+          return {
+            ok: true,
+            msge: returnRides,
+          };
+        }
 
         /*} else if (type === 'address') {
 
@@ -147,8 +148,8 @@ async function init() {
 
         } 
 */
-      }
-    }
+      },
+    },
   ]);
 
   //Start the server
