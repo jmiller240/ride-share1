@@ -4,21 +4,21 @@
             <h4 class='display-1'>Rides</h4>
 
             <v-data-table
-                v-if='rides.ok'
+                v-if='rides'
                 class='elevation-1'
                 :headers='headers'
                 :items='rides'
             >
                 <template v-slot:item="{ item }">
                     <tr>
-                        <td>{{ item.name }}</td>
+                        <td>{{ item.toLocation.name }}</td>
                         <td>{{ item.date }}</td>
                         <!--td>{{ item.capacity }}</td :disabled='item.capacity < item.passengerCount'-->
                         <td>{{ item.passengerCount }}</td>
-                        <td>{{ item.state }}</td>
-                        <td>{{ item.city }}</td>
-                        <td>{{ item.address }}</td>
-                        <td>{{ item.zipCode }}</td>
+                        <td>{{ item.toLocation.state }}</td>
+                        <td>{{ item.toLocation.city }}</td>
+                        <td>{{ item.toLocation.address }}</td>
+                        <td>{{ item.toLocation.zipCode }}</td>
                         <v-btn @click='joinRide(item.id)'>Join Ride</v-btn>
                     </tr>
                 </template>
@@ -52,17 +52,17 @@ export default {
     },
     mounted() {
         let sendType = this.$store.state.searchType;
-        let sendKey = this.$store.state.searchKey
+        let sendKey = this.$store.state.searchKey;
         this.$axios
-          .get(`/rides/${sendKey}/${sendType.toLowerCase()}`)
+          .get(`/rides/${sendKey}/${sendType}`)
           .then(result => {
-            if (result.ok) {
-              this.showDialog("Success", result.msge);
-              this.successfulSearch = true;
+            console.log(result.data.ok);
+            if (result.data.ok) {
+              this.showDialog("Success", result.data.msge);
               //What is returned?
-              this.rides = result.msge;
+              this.rides = result.data.msge;
             } else {
-              this.showDialog("Sorry", result.msge);
+              this.showDialog("Sorry", result.data.msge);
             }
           })
         .catch((err) => this.showDialog("Failed", err));
@@ -72,12 +72,12 @@ export default {
             this.$axios
                 .put(`/joinRide/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
-                    if( result.ok ) {
-                        this.showDialog("Success", result.msge);
+                    if( result.data.ok ) {
+                        this.showDialog("Success", result.data.msge);
                         //What is returned?
-                        this.rides = result.msge;
+                        this.rides = result.data.msge;
                     } else {
-                        this.showDialog("Sorry", result.msge);
+                        this.showDialog("Sorry", result.data.msge);
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));
