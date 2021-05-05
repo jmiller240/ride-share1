@@ -52,11 +52,11 @@ export default {
     },
     mounted() {
         let sendType = this.$store.state.searchType;
-        let sendKey = this.$store.state.searchKey
+        let sendKey = this.$store.state.searchKey;
         this.$axios
-          .get(`/rides/${sendKey}/${sendType.toLowerCase()}`)
+          .get(`/rides/${sendKey}/${sendType}`)
           .then(result => {
-            if (result.ok) {
+            if( result.ok ) {
               this.showDialog("Success", result.msge);
               this.successfulSearch = true;
               //What is returned?
@@ -72,6 +72,8 @@ export default {
             this.$axios
                 .put(`/joinRide/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
+                    this.rides = result.msge;
+                    /*
                     if( result.ok ) {
                         this.showDialog("Success", result.msge);
                         //What is returned?
@@ -79,6 +81,7 @@ export default {
                     } else {
                         this.showDialog("Sorry", result.msge);
                     }
+                    */
                 })
                 .catch((err) => this.showDialog("Failed", err));
         },
@@ -89,8 +92,8 @@ export default {
         },
         hideDialog() {
             this.dialogVisible = false;
-            if (this.accountCreated) {
-            this.$router.push({ name: "home-page" });
+            if( this.accountCreated ) {
+                this.$router.push({ name: "home-page" });
             }
         },
     }
