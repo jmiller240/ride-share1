@@ -60,8 +60,38 @@ async function init() {
     {
       method: "GET",
       path: '/rides/{userID}',
+      config: {
+        description: 'Display user rides',
+        validate: {
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+          })
+        }
+      },
       handler: async (request, h) => {
-        return await Ride.withGraphFetched('user');
+        let returnRides = [];
+        
+        knex('ride').select().innerJoin('user', 'ride.id', 'user.id')
+
+        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+          builder.where('id', 'userID');
+        });
+        rides.forEach(ride => {
+          if (ride.user) {
+            returnRides.push(ride);
+          }
+        });
+        if (!returnRides.length) {
+          return {
+            ok: false,
+            msge: `Nothing for ${request.params.userID}`
+          }
+        } else {
+          return {
+            ok: true,
+            msge: returnRides
+          }
+        };
       }
     },
 

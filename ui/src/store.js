@@ -19,7 +19,7 @@ export default new Vuex.Store({
     currentAccount: null,
     searchKey: '',
     searchType: '',
-    currentUser: 7,
+    currentUser: 10,
   },
 
   // A "getter" returns a computed property from the store, similar

@@ -42,13 +42,23 @@ async function main() {
   //await update();
   //await deleteTest();
 
-  const userRide = await knex.select().from('passenger').where('userID', 8).andWhere('rideID', 5);
-  console.log(userRide);
-  if (userRide.length >= 1){
-    console.log('nope');
-  }
+  let returnRides = [];
 
+  const rides = Ride.query().withGraphFetched('user');
+  console.log(rides);
 
+  /*const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+    builder.where('id', 'userID');
+  });
+  console.log(rides)
+  rides.forEach(ride => {
+    if (ride.user) {
+      returnRides.push(ride);
+    }
+  });
+
+  console.log(returnRides);
+*/
   
    knex.destroy();
 }
