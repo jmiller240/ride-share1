@@ -3,21 +3,21 @@
         <h4 class='display-1'>My Rides</h4>
 
         <v-data-table
-            v-if='rides.ok'
+            v-if='myRides'
             class='elevation-1'
             :headers='headers'
-            :items='rides'
+            :items='myRides'
         >
             <template v-slot:item="{ item }">
                 <tr>
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.toLocation.name }}</td>
                     <td>{{ item.date }}</td>
                     <!--td>{{ item.capacity }}</td-->
                     <td>{{ item.passengerCount }}</td>
-                    <td>{{ item.state }}</td>
-                    <td>{{ item.city }}</td>
-                    <td>{{ item.address }}</td>
-                    <td>{{ item.zipCode }}</td>
+                    <td>{{ item.toLocation.state }}</td>
+                    <td>{{ item.toLocation.city }}</td>
+                    <td>{{ item.toLocation.address }}</td>
+                    <td>{{ item.toLocation.zipCode }}</td>
                     <v-btn color='red' @click='leaveRide(item.id)'>Leave Ride</v-btn>
                 </tr>
             </template>
@@ -52,12 +52,12 @@ export default {
         this.$axios
             .get(`/rides/${this.$store.state.currentUser}`)
             .then(result => {
-                    if( result.ok ) {
-                        this.showDialog("Success", result.msge);
+                    if( result.data.ok ) {
+                        this.showDialog("Success", result.data.msge);
                         //What is returned?
-                        this.myRides = result.msge;
+                        this.myRides = result.data.msge;
                     } else {
-                        this.showDialog("Sorry", result.msge);
+                        this.showDialog("Sorry", result.data.msge);
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));
@@ -67,12 +67,12 @@ export default {
             this.$axios
                 .delete(`/rides/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
-                    if( result.ok ) {
-                        this.showDialog("Success", result.msge);
+                    if( result.data.ok ) {
+                        this.showDialog("Success", result.data.msge);
                         //What is returned?
-                        this.myRides = result.msge;
+                        this.myRides = result.data.msge;
                     } else {
-                        this.showDialog("Sorry", result.msge);
+                        this.showDialog("Sorry", result.data.msge);
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));

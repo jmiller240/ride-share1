@@ -106,23 +106,22 @@ async function init() {
 
     {
       method: 'PUT',
-      path: '/joinRide',
+      path: '/joinRide/{userID}/{rideID}',
       config: {
         description: 'User can join a ride',
         validate: {
-          payload: Joi.object({
-            user: Joi.number().integer().min(1),
-            ride: Joi.number().integer().min(1)
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+            rideID: Joi.number().integer().min(1)
           })
         }
       },
       handler: async (request, h) => {
-        const userID = request.payload.user;
-        const rideID = request.payload.ride;
+        const userID = request.params.userID;
+        const rideID = request.params.rideID;
         const user = await User.query().withGraphFetched('ride').where('id', userID);
         const ride = await Ride.query().withGraphFetched('vehicle').where('id', rideID);
-
-        const userRide = await knex.select().from('passenger')
+        const userRide = await knex.select().from('passenger').where('userID', userID).andWhere('rideID', rideID);
 
         // cant join ride twice
         if (user.length !== 1) {
@@ -135,7 +134,7 @@ async function init() {
             ok: false,
             msge: `Ride with id ${rideID} does not exist`
           }
-        } else if (user[0].ride.length >= 1) {
+        } else if (userRide.length >= 1) {
           return {
             ok: false,
             msge: `User with id ${userID} is already signed up for ride ${rideID}`
@@ -150,7 +149,7 @@ async function init() {
           let passCountArr = await Ride.query().select().where('id', rideID);
           let passCount = passCountArr[0].passengerCount;
           ++passCount;
-          await Ride.query().patch({ passengerCount: passCount});
+          await Ride.query().patch({ passengerCount: passCount}).where('id', rideID);
           return {
             ok: true,
             msge: `User ${userID} has successfuly joined ride ${rideID}`

@@ -42,10 +42,11 @@ async function main() {
   //await update();
   //await deleteTest();
 
-  let passCountArr = await Ride.query().select().where('id', 5);
-  let passCount = passCountArr[0].passengerCount;
-  console.log(passCount);
-  console.log(++passCount);
+  const userRide = await knex.select().from('passenger').where('userID', 8).andWhere('rideID', 5);
+  console.log(userRide);
+  if (userRide.length >= 1){
+    console.log('nope');
+  }
 
 
   

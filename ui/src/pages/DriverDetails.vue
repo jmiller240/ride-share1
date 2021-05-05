@@ -3,7 +3,7 @@
         <h4 class='display-1'>Your Driving Plans</h4>
 
         <v-data-table
-            v-if='rides.ok'
+            v-if='rides'
             class='elevation-1'
             :headers='headers'
             :items='rides'
