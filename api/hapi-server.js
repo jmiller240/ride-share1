@@ -202,11 +202,15 @@ async function init() {
       handler: async (request, h) => {
         const driverID = request.params.driverID;
         const rideID = request.params.rideID;
+        const vehicleID = await Ride.query().select('vehicleId').where('id', rideID);
+
         const driver = await Driver.query().withGraphFetched('ride').where('id', driverID);
         const ride = await Ride.query().withGraphFetched('driver').where('id', rideID);
-        const vehicle = await Ride.query().select('vehicleId').where('id', rideID);
+        
+
         const driverRide = await knex.select().from('drivers').where('driverId', driverID).andWhere('rideId', rideID);
-        const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID);
+        // Check to see if driver can drive the given vehicle
+        const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
 
         if( driver.length !== 1 ) {
           return {
