@@ -62,7 +62,7 @@ export default {
             .get(`/drivers/${this.$store.state.currentUser}`)
             .then(result => {
                 if( result.data.ok ) {
-                    this.showDialog("Success", result.msge);
+                    this.showDialog("Success", result.data.msge);
                     this.driverPlans = result.data.msge;
                 } else {
                     this.showDialog("Sorry", result.data.msge);
@@ -75,12 +75,12 @@ export default {
             this.$axios
                 .delete(`/drivers/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
-                    if( result.ok ) {
-                        this.showDialog("Success", result.msge);
-                        // Remove ride from display
-                        this.driverPlans = result.msge;
+                    if( result.data.ok ) {
+                        this.showDialog("Success", result.data.msge);
+                        // IMPORTANT - How to remove ride from display?
+                        //this.driverPlans = result.data.msge;
                     } else {
-                        this.showDialog("Sorry", result.msge);
+                        this.showDialog("Sorry", result.data.msge);
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));
@@ -93,7 +93,7 @@ export default {
         hideDialog() {
             this.dialogVisible = false;
             if (this.accountCreated) {
-            this.$router.push({ name: "home-page" });
+                this.$router.push({ name: "home-page" });
             }
         },
     },
