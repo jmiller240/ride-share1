@@ -136,7 +136,7 @@ async function init() {
 
     {
       method: 'PUT',
-      path: '/joinRide/{userID}/{rideID}',
+      path: '/passengers/{userID}/{rideID}',
       config: {
         description: 'User can join a ride',
         validate: {

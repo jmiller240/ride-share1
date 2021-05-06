@@ -101,7 +101,7 @@ export default {
   methods: {
     joinRide(id) {
       this.$axios
-        .put(`/joinRide/${this.$store.state.currentUser}/${id}`)
+        .put(`/passengers/${this.$store.state.currentUser}/${id}`)
         .then((result) => {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
