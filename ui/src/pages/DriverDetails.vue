@@ -14,10 +14,11 @@
                     <td>{{ item.date }}</td>
                     <!--td>{{ item.capacity }}</td :disabled='item.capacity < item.passengerCount'-->
                     <td>{{ item.passengerCount }}</td>
-                    <td>{{ item.state }}</td>
-                    <td>{{ item.city }}</td>
-                    <td>{{ item.address }}</td>
-                    <td>{{ item.zipCode }}</td>
+                    <td>{{ item.toLocation.state }}</td>
+                    <td>{{ item.toLocation.city }}</td>
+                    <td>{{ item.toLocation.address }}</td>
+                    <td>{{ item.toLocation.zipCode }}</td>
+                    <td>{{ item.vehicle }}</td>
                     <v-btn color='red' @click='cancelDrive(item.id)'>Cancel</v-btn>              
                 </tr>   
             </template>
@@ -44,6 +45,7 @@ export default {
                 { text: 'State', value: 'state' },
                 { text: 'Address', value: 'address' },
                 { text: 'Zip Code', value: 'zipCode' },
+                { text: 'Vehicle', value: 'vehicle' },
             ],
 
             driverPlans: [],

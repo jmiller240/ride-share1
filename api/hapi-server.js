@@ -204,7 +204,9 @@ async function init() {
         const rideID = request.params.rideID;
         const driver = await Driver.query().withGraphFetched('ride').where('id', driverID);
         const ride = await Ride.query().withGraphFetched('driver').where('id', rideID);
+        const vehicle = await Ride.query().select('vehicleId').where('id', rideID);
         const driverRide = await knex.select().from('drivers').where('driverId', driverID).andWhere('rideId', rideID);
+        const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID);
 
         if( driver.length !== 1 ) {
           return {
@@ -221,6 +223,11 @@ async function init() {
             ok: false,
             msge: `Ride ${rideID} does not have driver ${driverID}`,
           };
+        } else if( driverAuthorized.length !== 1 ) { 
+          return {
+            ok: false,
+            msge: `Driver ${driverID} is not authorized to drive vehicle`
+          }
         } else {
           await Ride.relatedQuery('driver').for(rideID).delete().where('driverId', driverID);
           return {
