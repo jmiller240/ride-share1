@@ -6,7 +6,7 @@
             v-if='rides'
             class='elevation-1'
             :headers='headers'
-            :items='rides'
+            :items='driverPlans'
         >
             <template v-slot:item="{ item }">
                 <tr>
@@ -45,19 +45,25 @@ export default {
                 { text: 'Address', value: 'address' },
                 { text: 'Zip Code', value: 'zipCode' },
             ],
+
             driverPlans: [],
+
+            dialogHeader: "<no dialogHeader>",
+            dialogText: "<no dialogText>",
+            dialogVisible: false,
+
+            errorMessage: '',
         };
     },
     mounted() {
         this.$axios
-            .get( /* FIGURE OUT ROUTE */ )
+            .get(`/drivers/${this.$store.state.currentUser}`)
             .then(result => {
-                if( result.ok ) {
+                if( result.data.ok ) {
                     this.showDialog("Success", result.msge);
-                    //What is returned?
-                    this.driverPlans = result.msge;
+                    this.driverPlans = result.data.msge;
                 } else {
-                    this.showDialog("Sorry", result.msge);
+                    this.showDialog("Sorry", result.data.msge);
                 }
             })
             .catch((err) => this.showDialog("Failed", err));
@@ -65,11 +71,11 @@ export default {
     methods: {
         cancelRide(id) {
             this.$axios
-                .delete( /* FIGURE OUT ROUTE */ )
+                .delete(`/drivers/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
                     if( result.ok ) {
                         this.showDialog("Success", result.msge);
-                        //What is returned?
+                        // Remove ride from display
                         this.driverPlans = result.msge;
                     } else {
                         this.showDialog("Sorry", result.msge);
