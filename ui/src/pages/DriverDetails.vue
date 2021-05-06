@@ -6,7 +6,7 @@
             v-if='rides'
             class='elevation-1'
             :headers='headers'
-            :items='rides'
+            :items='driverPlans'
         >
             <template v-slot:item="{ item }">
                 <tr>
@@ -14,10 +14,11 @@
                     <td>{{ item.date }}</td>
                     <!--td>{{ item.capacity }}</td :disabled='item.capacity < item.passengerCount'-->
                     <td>{{ item.passengerCount }}</td>
-                    <td>{{ item.state }}</td>
-                    <td>{{ item.city }}</td>
-                    <td>{{ item.address }}</td>
-                    <td>{{ item.zipCode }}</td>
+                    <td>{{ item.toLocation.state }}</td>
+                    <td>{{ item.toLocation.city }}</td>
+                    <td>{{ item.toLocation.address }}</td>
+                    <td>{{ item.toLocation.zipCode }}</td>
+                    <td>{{ item.vehicle }}</td>
                     <v-btn color='red' @click='cancelDrive(item.id)'>Cancel</v-btn>              
                 </tr>   
             </template>
@@ -44,20 +45,27 @@ export default {
                 { text: 'State', value: 'state' },
                 { text: 'Address', value: 'address' },
                 { text: 'Zip Code', value: 'zipCode' },
+                { text: 'Vehicle', value: 'vehicle' },
             ],
+
             driverPlans: [],
+
+            dialogHeader: "<no dialogHeader>",
+            dialogText: "<no dialogText>",
+            dialogVisible: false,
+
+            errorMessage: '',
         };
     },
     mounted() {
         this.$axios
-            .get( /* FIGURE OUT ROUTE */ )
+            .get(`/drivers/${this.$store.state.currentUser}`)
             .then(result => {
-                if( result.ok ) {
-                    this.showDialog("Success", result.msge);
-                    //What is returned?
-                    this.driverPlans = result.msge;
+                if( result.data.ok ) {
+                    this.showDialog("Success", result.data.msge);
+                    this.driverPlans = result.data.msge;
                 } else {
-                    this.showDialog("Sorry", result.msge);
+                    this.showDialog("Sorry", result.data.msge);
                 }
             })
             .catch((err) => this.showDialog("Failed", err));
@@ -65,14 +73,14 @@ export default {
     methods: {
         cancelRide(id) {
             this.$axios
-                .delete( /* FIGURE OUT ROUTE */ )
+                .delete(`/drivers/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
-                    if( result.ok ) {
-                        this.showDialog("Success", result.msge);
-                        //What is returned?
-                        this.driverPlans = result.msge;
+                    if( result.data.ok ) {
+                        this.showDialog("Success", result.data.msge);
+                        // IMPORTANT - How to remove ride from display?
+                        //this.driverPlans = result.data.msge;
                     } else {
-                        this.showDialog("Sorry", result.msge);
+                        this.showDialog("Sorry", result.data.msge);
                     }
                 })
                 .catch((err) => this.showDialog("Failed", err));
@@ -85,7 +93,7 @@ export default {
         hideDialog() {
             this.dialogVisible = false;
             if (this.accountCreated) {
-            this.$router.push({ name: "home-page" });
+                this.$router.push({ name: "home-page" });
             }
         },
     },

@@ -187,6 +187,61 @@ async function init() {
         }
       },      
     },
+    {
+      methods: 'DELETE',
+      path: '/drivers/{driverID}/{rideID}',
+      config: {
+        description: 'Cancel plan to drive a ride',
+        validate: {
+          params: Joi.object({
+            driverID: Joi.number().integer().min(1),
+            rideID: Joi.number().integer().min(1),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const driverID = request.params.driverID;
+        const rideID = request.params.rideID;
+        const vehicleID = await Ride.query().select('vehicleId').where('id', rideID);
+
+        const driver = await Driver.query().withGraphFetched('ride').where('id', driverID);
+        const ride = await Ride.query().withGraphFetched('driver').where('id', rideID);
+        
+
+        const driverRide = await knex.select().from('drivers').where('driverId', driverID).andWhere('rideId', rideID);
+        // Check to see if driver can drive the given vehicle
+        const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
+
+        if( driver.length !== 1 ) {
+          return {
+            ok: false,
+            msge: `Driver with id ${driverID} does not exist`,
+          };
+        } else if ( ride.length !== 1 ) {
+          return {
+            ok: false,
+            msge: `Ride with id ${rideID} does not exist`,
+          };
+        } else if ( driverRide.length != 1 ) {
+          return {
+            ok: false,
+            msge: `Ride ${rideID} does not have driver ${driverID}`,
+          };
+        } else if( driverAuthorized.length !== 1 ) { 
+          return {
+            ok: false,
+            msge: `Driver ${driverID} is not authorized to drive vehicle`
+          }
+        } else {
+          await Ride.relatedQuery('driver').for(rideID).delete().where('driverId', driverID);
+          return {
+            ok: true,
+            msge: `Driver ${driverID} removed from ride ${rideID}`,
+          };
+        }
+
+      },
+    }
 
     
   ]);
