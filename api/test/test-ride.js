@@ -5,19 +5,19 @@ const Ride = require("../models/Ride.js");
 
 async function create() {
   const newRide = await Ride.query().insert(
-        {
-            date: '',
-            time: '',
-            distance: 80.0,
-            fuelPrice: 2.90,
-            fee: 25,
-            vehicle: [{
+    {
+      date: '',
+      time: '',
+      distance: 80.0,
+      fuelPrice: 2.90,
+      fee: 25,
+      vehicle: [{
 
-            }],
-            fromLocation: [{}],
-            toLocation: [{}]
-        }
-    )
+      }],
+      fromLocation: [{}],
+      toLocation: [{}]
+    }
+  )
   console.log("CREATE\n", newRide);
 }
 
@@ -28,7 +28,7 @@ async function read(id) {
 
 }
 
-async function update() {}
+async function update() { }
 
 async function deleteTest(id) {
   const ride = await Ride.query().del().where('id', 10);
@@ -42,22 +42,41 @@ async function main() {
   //await update();
   //await deleteTest();
 
+  let rideIDs = [];
   let returnRides = [];
 
-
   const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-    builder.where('id', 8);
+    builder.where('id', 10);
   });
+  console.log(rides)
   rides.forEach(ride => {
     if (ride.user.length === 1) {
-      returnRides.push(ride);
+      rideIDs.push(ride.id);
     }
   });
+  console.log(rideIDs);
+  rideIDs.forEach(async (id) => {
+    let location = await Ride.query().withGraphFetched('toLocation').where('id', id);
+    console.log(location);
+    returnRides.push(location[0]);
+  });
+
 
   console.log(returnRides);
+  if (returnRides.length == 0) {
+    console.log( {
+      ok: false,
+      msge: `Nothing for 10`
+    })
+  } else {
+    console.log( {
+      ok: true,
+      msge: returnRides
+    })
+  };
 
-  
-   knex.destroy();
+
+  knex.destroy();
 }
 
 process.on("unhandledRejection", (err) => {

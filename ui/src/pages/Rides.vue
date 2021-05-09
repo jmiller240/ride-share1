@@ -19,7 +19,6 @@
             <td>{{ item.toLocation.city }}</td>
             <td>{{ item.toLocation.address }}</td>
             <td>{{ item.toLocation.zipCode }}</td>
-            <td>{{ item.vehicle }}</td>
             <v-btn @click="joinRide(item.id)">Join Ride</v-btn>
           </tr>
         </template>
@@ -72,7 +71,7 @@ export default {
         { text: "State", value: "state" },
         { text: "Address", value: "address" },
         { text: "Zip Code", value: "zipCode" },
-        { text: 'Vehicle', value: 'vehicle' },
+        //{ text: 'Vehicle', value: 'vehicle' },
       ],
 
       rides: [],

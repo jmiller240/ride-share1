@@ -18,7 +18,6 @@
                     <td>{{ item.toLocation.city }}</td>
                     <td>{{ item.toLocation.address }}</td>
                     <td>{{ item.toLocation.zipCode }}</td>
-                    <td>{{ item.vehicle }}</td>
                     <v-btn color='red' @click='cancelDrive(item.id)'>Cancel</v-btn>              
                 </tr>   
             </template>
@@ -45,7 +44,7 @@ export default {
                 { text: 'State', value: 'state' },
                 { text: 'Address', value: 'address' },
                 { text: 'Zip Code', value: 'zipCode' },
-                { text: 'Vehicle', value: 'vehicle' },
+                //{ text: 'Vehicle', value: 'vehicle' },
             ],
 
             driverPlans: [],
@@ -59,7 +58,7 @@ export default {
     },
     mounted() {
         this.$axios
-            .get(`/drivers/${this.$store.state.currentUser}`)
+            .get(`/drives/${this.$store.state.currentUser}`)
             .then(result => {
                 if( result.data.ok ) {
                     this.showDialog("Success", result.data.msge);
@@ -73,7 +72,7 @@ export default {
     methods: {
         cancelRide(id) {
             this.$axios
-                .delete(`/drivers/${this.$store.state.currentUser}/${id}`)
+                .delete(`/drives/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
                     if( result.data.ok ) {
                         this.showDialog("Success", result.data.msge);
