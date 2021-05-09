@@ -44,21 +44,18 @@ async function main() {
 
   let returnRides = [];
 
-  const rides = Ride.query().withGraphFetched('user');
-  console.log(rides);
 
-  /*const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-    builder.where('id', 'userID');
+  const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+    builder.where('id', 8);
   });
-  console.log(rides)
   rides.forEach(ride => {
-    if (ride.user) {
+    if (ride.user.length === 1) {
       returnRides.push(ride);
     }
   });
 
   console.log(returnRides);
-*/
+
   
    knex.destroy();
 }

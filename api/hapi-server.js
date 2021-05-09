@@ -69,22 +69,95 @@ async function init() {
         }
       },
       handler: async (request, h) => {
+        const userID = request.params.userID;
         let returnRides = [];
         
-        knex('ride').select().innerJoin('user', 'ride.id', 'user.id')
-
         const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-          builder.where('id', 'userID');
+          builder.where('id', userID);
         });
         rides.forEach(ride => {
-          if (ride.user) {
+          if (ride.user.length === 1) {
             returnRides.push(ride);
           }
         });
-        if (!returnRides.length) {
+        if (returnRides.length == 0) {
           return {
             ok: false,
-            msge: `Nothing for ${request.params.userID}`
+            msge: `Nothing for ${userID}`
+          }
+        } else {
+          return {
+            ok: true,
+            msge: returnRides
+          }
+        };
+      }
+    },
+
+    {
+      method: "DELETE",
+      path: '/rides/{userID}',
+      config: {
+        description: 'Leave a ride',
+        validate: {
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const userID = request.params.userID;
+        let returnRides = [];
+        
+        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+          builder.where('id', userID);
+        });
+        rides.forEach(ride => {
+          if (ride.user.length === 1) {
+            returnRides.push(ride);
+          }
+        });
+        if (returnRides.length == 0) {
+          return {
+            ok: false,
+            msge: `Nothing for ${userID}`
+          }
+        } else {
+          return {
+            ok: true,
+            msge: returnRides
+          }
+        };
+      }
+    },
+
+    {
+      method: "GET",
+      path: '/drives/{driverID}',
+      config: {
+        description: 'Display rides user will drive on',
+        validate: {
+          params: Joi.object({
+            driverID: Joi.number().integer().min(1),
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const driverID = request.params.driverID;
+        let returnRides = [];
+        
+        const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
+          builder.where('id', driverID);
+        });
+        rides.forEach(ride => {
+          if (ride.driver.length === 1) {
+            returnRides.push(ride);
+          }
+        });
+        if (returnRides.length == 0) {
+          return {
+            ok: false,
+            msge: `Nothing for ${driverID}`
           }
         } else {
           return {
@@ -187,7 +260,8 @@ async function init() {
         }
       },      
     },
-    {
+
+    /*{ 
       methods: 'DELETE',
       path: '/drivers/{driverID}/{rideID}',
       config: {
@@ -206,11 +280,17 @@ async function init() {
 
         const driver = await Driver.query().withGraphFetched('ride').where('id', driverID);
         const ride = await Ride.query().withGraphFetched('driver').where('id', rideID);
+
+        await (await Driver.relatedQuery('ride').for(driverID).unrelate().where('id', vehicleID));
+        return {
+          ok: true,
+          msge: `Driver ${driverID} is no longer signed up to drive for ride ${rideID}`
+        }
         
 
         const driverRide = await knex.select().from('drivers').where('driverId', driverID).andWhere('rideId', rideID);
         // Check to see if driver can drive the given vehicle
-        const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
+        // Driver doesn't have vehicle ID    // const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
 
         if( driver.length !== 1 ) {
           return {
@@ -241,7 +321,7 @@ async function init() {
         }
 
       },
-    }
+    } */
 
     
   ]);
