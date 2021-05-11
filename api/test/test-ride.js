@@ -48,21 +48,26 @@ async function main() {
   const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
     builder.where('id', 10);
   });
-  console.log(rides)
+  //console.log(rides)
   rides.forEach(ride => {
     if (ride.user.length === 1) {
       rideIDs.push(ride.id);
     }
   });
-  console.log(rideIDs);
-  rideIDs.forEach(async (id) => {
-    let location = await Ride.query().withGraphFetched('toLocation').where('id', id);
-    console.log(location);
+  //console.log(rideIDs);
+  /*rideIDs.forEach(async (id) => {
+    //const location = await Ride.query().where('id', id).withGraphFetched('toLocation');
+    console.log(id);
+    //returnRides.push(location[0]);
+  });*/
+
+  for (let i = 0; i < rideIDs.length; i++) {
+    const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
     returnRides.push(location[0]);
-  });
+  }
 
 
-  console.log(returnRides);
+  //console.log(returnRides);
   if (returnRides.length == 0) {
     console.log( {
       ok: false,
@@ -73,7 +78,7 @@ async function main() {
       ok: true,
       msge: returnRides
     })
-  };
+  }
 
 
   knex.destroy();

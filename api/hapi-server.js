@@ -131,7 +131,7 @@ async function init() {
             ok: false,
             msge: `User with id ${userID} is already signed up for ride ${rideID}`
           }
-        } else if ( ride[0].passengerCount >= ride[0].vehicle.capacity ) {
+        } else if (ride[0].passengerCount >= ride[0].vehicle.capacity) {
           return {
             ok: false,
             msge: `Ride with id ${rideID} is full`
@@ -141,13 +141,13 @@ async function init() {
           let passCountArr = await Ride.query().select().where('id', rideID);
           let passCount = passCountArr[0].passengerCount;
           ++passCount;
-          await Ride.query().patch({ passengerCount: passCount}).where('id', rideID);
+          await Ride.query().patch({ passengerCount: passCount }).where('id', rideID);
           return {
             ok: true,
             msge: `User ${userID} has successfuly joined ride ${rideID}`
           }
         }
-      },      
+      },
     },
 
     {
@@ -165,19 +165,22 @@ async function init() {
         const userID = request.params.userID;
         let rideIDs = [];
         let returnRides = [];
-        
+
         const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
           builder.where('id', userID);
         });
+
         rides.forEach(ride => {
           if (ride.user.length === 1) {
             rideIDs.push(ride.id);
           }
         });
-        rideIDs.forEach(async (id) => {
-          const location = await Ride.query().withGraphFetched('toLocation').where('id', id);
+
+        for (let i = 0; i < rideIDs.length; i++) {
+          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
           returnRides.push(location[0]);
-        })
+        }
+
         if (returnRides.length == 0) {
           return {
             ok: false,
@@ -207,6 +210,8 @@ async function init() {
       handler: async (request, h) => {
         const rideID = request.params.rideID;
         const ride = await Ride.relatedQuery('user').for(rideID).unrelate().where('id', request.params.userID).returning('*');
+        // Decrement passengerCount
+
         if (ride == 1) {
           return {
             ok: true,
@@ -235,21 +240,35 @@ async function init() {
       handler: async (request, h) => {
         const userID = request.params.userID;
         let driverID = await Driver.query().select('id').where('userID', userID);
+        if (driverID == "") {
+          return {
+            ok: false,
+            msge: `You are not signed up to drive`
+          }
+        }
         driverID = driverID[0].id;
+        let rideIDs = [];
         let returnRides = [];
-        
+
         const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
           builder.where('id', driverID);
         });
+
         rides.forEach(ride => {
           if (ride.driver.length === 1) {
-            returnRides.push(ride);
+            rideIDs.push(ride.id);
           }
         });
+
+        for (let i = 0; i < rideIDs.length; i++) {
+          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
+          returnRides.push(location[0]);
+        }
+
         if (returnRides.length == 0) {
           return {
             ok: false,
-            msge: `Nothing for ${driverID}`
+            msge: `Nothing for user ${userID}`
           }
         } else {
           return {
@@ -262,19 +281,22 @@ async function init() {
 
     {
       method: "DELETE",
-      path: '/drives/{rideID}/{driverID}',
+      path: '/drives/{rideID}/{userID}',
       config: {
         description: 'Leave a ride you signed up to drive on',
         validate: {
           params: Joi.object({
             rideID: Joi.number().integer().min(1),
-            driverID: Joi.number().integer().min(1)
+            userID: Joi.number().integer().min(1)
           })
         }
       },
       handler: async (request, h) => {
+        let driverID = await Driver.query().select('id').where('userID', request.params.userID);
+        driverID = driverID[0].id;
         const rideID = request.params.rideID;
-        const ride = await Ride.relatedQuery('driver').for(rideID).unrelate().where('id', request.params.driverID).returning('*');
+
+        const ride = await Ride.relatedQuery('driver').for(rideID).unrelate().where('id', driverID).returning('*');
         if (ride == 1) {
           return {
             ok: true,
@@ -289,9 +311,9 @@ async function init() {
       }
     },
 
-    
 
-    
+
+
 
     /*{ 
       methods: 'PUT',
@@ -354,7 +376,7 @@ async function init() {
       },
     }*/
 
-    
+
   ]);
 
   //Start the server

@@ -27,6 +27,27 @@
         >Find a ride</v-btn
       >
     </div>
+
+    <div class="text-xs-center">
+      <v-dialog v-model="dialogVisible" width="500">
+        <v-card>
+          <v-card-title primary-title>
+            {{ dialogHeader }}
+          </v-card-title>
+
+          <v-card-text>
+            {{ dialogText }}
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-container>
 </template>
 
@@ -49,7 +70,7 @@ export default {
       ],
       myRides: [],
 
-      errorMessage: ""
+      errorMessage: "",
     };
   },
   mounted() {
@@ -61,7 +82,7 @@ export default {
           //What is returned?
           this.myRides = result.data.msge;
         } else {
-            this.errorMessage = result.data.msge;
+          this.errorMessage = result.data.msge;
         }
       })
       .catch((err) => this.showDialog("Failed", err));
@@ -80,6 +101,17 @@ export default {
           }
         })
         .catch((err) => this.showDialog("Failed", err));
+    },
+    showDialog(header, text) {
+      this.dialogHeader = header;
+      this.dialogText = text;
+      this.dialogVisible = true;
+    },
+    hideDialog() {
+      this.dialogVisible = false;
+      if (this.accountCreated) {
+        this.$router.push({ name: "home-page" });
+      }
     },
   },
 };
