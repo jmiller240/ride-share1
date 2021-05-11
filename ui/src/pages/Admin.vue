@@ -114,6 +114,7 @@
 
                 <!-- Vehicle table actions -->
                 <template v-slot:[`item.actions`]='{ item }'>
+                    <!-- TODO: change buttons to icons -->
                     <v-btn text @click='editVehicleItem(item)'> Edit </v-btn>
                     <v-btn text @click='deleteVehicleItem(item)'> Delete </v-btn>
                 </template>
@@ -219,10 +220,12 @@ export default {
             this.editedVehicle = Object.assign({}, item);
             this.dialogDelete = true;
         },
+        // deletes item (press "OK" during deleteVehicleConfirm)
         deleteVehicleConfirm() {
             this.vehicles.splice(this.editedIndex, 1);
             this.closeDelete();
         },
+        // discard created vehicle
         close() {
             this.dialog = false;
             // $nextTick() performs the enclosed function upon the next DOM update
@@ -231,6 +234,7 @@ export default {
                 this.editedIndex = -1;
             });
         },
+        // cancels delete (press "cancel" during deleteVehicleConfirm)
         closeDelete() {
             this.dialogDelete = false;
             this.$nextTick(() => {
@@ -238,6 +242,7 @@ export default {
                 this.editedIndex = -1
             });
         },
+        // add created vehicle to table
         save() {
             if( this.editedIndex > -1 ) {
                 Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
