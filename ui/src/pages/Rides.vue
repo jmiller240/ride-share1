@@ -19,12 +19,7 @@
             <td>{{ item.toLocation.city }}</td>
             <td>{{ item.toLocation.address }}</td>
             <td>{{ item.toLocation.zipCode }}</td>
-<<<<<<< HEAD
-            <td>{{ item.vehicle }}</td>
-            <v-btn color='green' @click="joinRide(item.id)">Join Ride</v-btn>
-=======
             <v-btn @click="joinRide(item.id)">Join Ride</v-btn>
->>>>>>> 64edceb319235b623e38a59a52b2936a8aed7807
           </tr>
         </template>
       </v-data-table>

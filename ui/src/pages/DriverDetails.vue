@@ -112,37 +112,11 @@ export default {
       this.dialogText = text;
       this.dialogVisible = true;
     },
-<<<<<<< HEAD
-    methods: {
-        cancelRide(id) {
-            this.$axios
-                .delete(`/drivers/${this.$store.state.currentUser}/${id}`)
-                .then(result => {
-                    if( result.data.ok ) {
-                        this.showDialog("Success", result.data.msge);
-                        // TODO: remove ride from display
-                        // this.driverPlans = result.data.msge;
-                    } else {
-                        this.showDialog("Sorry", result.data.msge);
-                    }
-                })
-                .catch((err) => this.showDialog("Failed", err));
-        },
-        showDialog(header, text) {
-            this.dialogHeader = header;
-            this.dialogText = text;
-            this.dialogVisible = true;
-        },
-        hideDialog() {
-            this.dialogVisible = false;
-        },
-=======
     hideDialog() {
       this.dialogVisible = false;
       if (this.accountCreated) {
         this.$router.push({ name: "home-page" });
       }
->>>>>>> 64edceb319235b623e38a59a52b2936a8aed7807
     },
   },
 };
