@@ -8,7 +8,7 @@
 
     <v-spacer></v-spacer>
 
-    <v-btn text :to="{ name: 'myRides' }">My Rides</v-btn>
+    <v-btn text :to="{ name: 'MyRides' }">My Rides</v-btn>
     <v-btn text :to="{ name: 'driverDetails' }">Driver Details</v-btn>
 
     <v-menu v-if="isLoggedIn" offset-y>

@@ -58,117 +58,6 @@ async function init() {
     },
 
     {
-      method: "GET",
-      path: '/rides/{userID}',
-      config: {
-        description: 'Display user rides',
-        validate: {
-          params: Joi.object({
-            userID: Joi.number().integer().min(1),
-          })
-        }
-      },
-      handler: async (request, h) => {
-        const userID = request.params.userID;
-        let returnRides = [];
-        
-        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-          builder.where('id', userID);
-        });
-        rides.forEach(ride => {
-          if (ride.user.length === 1) {
-            returnRides.push(ride);
-          }
-        });
-        if (returnRides.length == 0) {
-          return {
-            ok: false,
-            msge: `Nothing for ${userID}`
-          }
-        } else {
-          return {
-            ok: true,
-            msge: returnRides
-          }
-        };
-      }
-    },
-
-    {
-      method: "DELETE",
-      path: '/rides/{userID}',
-      config: {
-        description: 'Leave a ride',
-        validate: {
-          params: Joi.object({
-            userID: Joi.number().integer().min(1),
-          })
-        }
-      },
-      handler: async (request, h) => {
-        const userID = request.params.userID;
-        let returnRides = [];
-        
-        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-          builder.where('id', userID);
-        });
-        rides.forEach(ride => {
-          if (ride.user.length === 1) {
-            returnRides.push(ride);
-          }
-        });
-        if (returnRides.length == 0) {
-          return {
-            ok: false,
-            msge: `Nothing for ${userID}`
-          }
-        } else {
-          return {
-            ok: true,
-            msge: returnRides
-          }
-        };
-      }
-    },
-
-    {
-      method: "GET",
-      path: '/drives/{driverID}',
-      config: {
-        description: 'Display rides user will drive on',
-        validate: {
-          params: Joi.object({
-            driverID: Joi.number().integer().min(1),
-          })
-        }
-      },
-      handler: async (request, h) => {
-        const driverID = request.params.driverID;
-        let returnRides = [];
-        
-        const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
-          builder.where('id', driverID);
-        });
-        rides.forEach(ride => {
-          if (ride.driver.length === 1) {
-            returnRides.push(ride);
-          }
-        });
-        if (returnRides.length == 0) {
-          return {
-            ok: false,
-            msge: `Nothing for ${driverID}`
-          }
-        } else {
-          return {
-            ok: true,
-            msge: returnRides
-          }
-        };
-      }
-    },
-
-    {
       method: 'GET',
       path: '/rides/{searchKey}/{type}',
       config: {
@@ -242,7 +131,7 @@ async function init() {
             ok: false,
             msge: `User with id ${userID} is already signed up for ride ${rideID}`
           }
-        } else if ( ride[0].passengerCount >= ride[0].vehicle.capacity ) {
+        } else if (ride[0].passengerCount >= ride[0].vehicle.capacity) {
           return {
             ok: false,
             msge: `Ride with id ${rideID} is full`
@@ -258,14 +147,179 @@ async function init() {
             msge: `User ${userID} has successfuly joined ride ${rideID}`
           }
         }
-      },      
+      },
     },
 
-    /*{ 
-      methods: 'DELETE',
-      path: '/drivers/{driverID}/{rideID}',
+    {
+      method: "GET",
+      path: '/rides/{userID}',
       config: {
-        description: 'Cancel plan to drive a ride',
+        description: 'Display user rides',
+        validate: {
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const userID = request.params.userID;
+        let rideIDs = [];
+        let returnRides = [];
+
+        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+          builder.where('id', userID);
+        });
+
+        rides.forEach(ride => {
+          if (ride.user.length === 1) {
+            rideIDs.push(ride.id);
+          }
+        });
+
+        for (let i = 0; i < rideIDs.length; i++) {
+          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
+          returnRides.push(location[0]);
+        }
+
+        if (returnRides.length == 0) {
+          return {
+            ok: false,
+            msge: `Nothing for ${userID}`
+          }
+        } else {
+          return {
+            ok: true,
+            msge: returnRides
+          }
+        };
+      }
+    },
+
+    {
+      method: "DELETE",
+      path: '/rides/{rideID}/{userID}',
+      config: {
+        description: 'Leave a ride',
+        validate: {
+          params: Joi.object({
+            rideID: Joi.number().integer().min(1),
+            userID: Joi.number().integer().min(1),
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const rideID = request.params.rideID;
+        const ride = await Ride.relatedQuery('user').for(rideID).unrelate().where('id', request.params.userID).returning('*');
+        // Decrement passengerCount
+
+        if (ride == 1) {
+          return {
+            ok: true,
+            msge: `Successfully left ride ${rideID}`
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't leave ride ${rideID}`
+          }
+        }
+      }
+    },
+
+    {
+      method: "GET",
+      path: '/drives/{userID}',
+      config: {
+        description: 'Display rides user will drive on',
+        validate: {
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const userID = request.params.userID;
+        let driverID = await Driver.query().select('id').where('userID', userID);
+        if (driverID == "") {
+          return {
+            ok: false,
+            msge: `You are not signed up to drive`
+          }
+        }
+        driverID = driverID[0].id;
+        let rideIDs = [];
+        let returnRides = [];
+
+        const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
+          builder.where('id', driverID);
+        });
+
+        rides.forEach(ride => {
+          if (ride.driver.length === 1) {
+            rideIDs.push(ride.id);
+          }
+        });
+
+        for (let i = 0; i < rideIDs.length; i++) {
+          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
+          returnRides.push(location[0]);
+        }
+
+        if (returnRides.length == 0) {
+          return {
+            ok: false,
+            msge: `Nothing for user ${userID}`
+          }
+        } else {
+          return {
+            ok: true,
+            msge: returnRides
+          }
+        };
+      }
+    },
+
+    {
+      method: "DELETE",
+      path: '/drives/{rideID}/{userID}',
+      config: {
+        description: 'Leave a ride you signed up to drive on',
+        validate: {
+          params: Joi.object({
+            rideID: Joi.number().integer().min(1),
+            userID: Joi.number().integer().min(1)
+          })
+        }
+      },
+      handler: async (request, h) => {
+        let driverID = await Driver.query().select('id').where('userID', request.params.userID);
+        driverID = driverID[0].id;
+        const rideID = request.params.rideID;
+
+        const ride = await Ride.relatedQuery('driver').for(rideID).unrelate().where('id', driverID).returning('*');
+        if (ride == 1) {
+          return {
+            ok: true,
+            msge: `Successfully left ride ${rideID}`
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't leave ride ${rideID}`
+          }
+        }
+      }
+    },
+
+
+
+
+
+    /*{ 
+      methods: 'PUT',
+      path: '/drivers/{userID}/{rideID}',
+      config: {
+        description: 'Sign up to drive for a ride',
         validate: {
           params: Joi.object({
             driverID: Joi.number().integer().min(1),
@@ -274,22 +328,21 @@ async function init() {
         },
       },
       handler: async (request, h) => {
-        const driverID = request.params.driverID;
+        const userID = request.params.driverID;
         const rideID = request.params.rideID;
         const vehicleID = await Ride.query().select('vehicleId').where('id', rideID);
 
-        const driver = await Driver.query().withGraphFetched('ride').where('id', driverID);
-        const ride = await Ride.query().withGraphFetched('driver').where('id', rideID);
-
-        await (await Driver.relatedQuery('ride').for(driverID).unrelate().where('id', vehicleID));
-        return {
-          ok: true,
-          msge: `Driver ${driverID} is no longer signed up to drive for ride ${rideID}`
+        // User has to be driver
+        const userDriver = await Driver.query().select().where('userID', userID);
+        if (userDriver.length != 1) {
+          return {
+            ok: false,
+            msge: `User ${userID} is not signed up to drive`
+          }
         }
-        
 
-        const driverRide = await knex.select().from('drivers').where('driverId', driverID).andWhere('rideId', rideID);
         // Check to see if driver can drive the given vehicle
+
         // Driver doesn't have vehicle ID    // const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
 
         if( driver.length !== 1 ) {
@@ -321,9 +374,9 @@ async function init() {
         }
 
       },
-    } */
+    }*/
 
-    
+
   ]);
 
   //Start the server
