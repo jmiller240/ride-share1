@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <!-- Display Vehicles -->
+        <!-- Vehicle Table -->
         <div>
             <h4 class='display-1'>Admin</h4>
 
@@ -18,6 +18,7 @@
                             vertical>
                         </v-divider>
                         <v-spacer></v-spacer>
+                        <!-- Create new vehicle -->
                         <v-dialog v-model='dialog' max-width='500px'>
                             <template v-slot:activator='{ on, attrs }'>
                                 <v-btn
@@ -30,6 +31,7 @@
                                     New Vehicle
                                 </v-btn>
                             </template>
+                            <!-- Display table -->
                             <v-card>
                                 <v-card-title><span class='headline'>{{ formTitle }}</span></v-card-title>
                                 <v-card-text>
@@ -79,6 +81,7 @@
                                     </v-container>
                                 </v-card-text>
 
+                                <!-- Keep or discard new vehicle -->
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn
@@ -95,6 +98,7 @@
                             </v-card>
                         </v-dialog>
 
+                        <!-- Confirm deletion -->
                         <v-dialog v-model='dialogDelete' max-width='500px'>
                             <v-card>
                                 <v-card-title class='headline'>Are you sure you want to delete this item?</v-card-title>
@@ -108,7 +112,9 @@
                     </v-toolbar>
                 </template>
 
+                <!-- Vehicle table actions -->
                 <template v-slot:[`item.actions`]='{ item }'>
+                    <!-- TODO: change buttons to icons -->
                     <v-btn text @click='editVehicleItem(item)'> Edit </v-btn>
                     <v-btn text @click='deleteVehicleItem(item)'> Delete </v-btn>
                 </template>
@@ -137,7 +143,7 @@ export default {
             dialogVisible: false,
 
             errorMessage: '',
-            
+
             vehicleHeaders: [
                 { text: 'Make', align: 'start', sortable: false, value: 'make' },
                 { text: 'Model', value: 'model' },
@@ -150,6 +156,7 @@ export default {
             ],
             vehicles: [],
             editedIndex: -1,
+            // Model for edited vehicle, replaced when vehicle selected
             editedVehicle: {
                 make: '',
                 model: '',
@@ -172,6 +179,7 @@ export default {
     },
 
     computed: {
+        // If editing an item in the table, label the editing form
         formTitle() {
             return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
         },
@@ -198,11 +206,14 @@ export default {
                 }
             })
             .catch(err => this.showDialog(err));
+            // TODO: add routes for rest of tables
     },
 
     methods: {
         editVehicleItem(item){
             this.editedIndex = this.vehicles.indexOf(item);
+            // Object.assign takes a target and a source
+            // empty object is replaced with the value of the edited item
             this.editedVehicle = Object.assign({}, item);
             this.dialog = true;
         },
@@ -211,17 +222,21 @@ export default {
             this.editedVehicle = Object.assign({}, item);
             this.dialogDelete = true;
         },
+        // deletes item (press "OK" during deleteVehicleConfirm)
         deleteVehicleConfirm() {
             this.vehicles.splice(this.editedIndex, 1);
             this.closeDelete();
         },
+        // discard created vehicle
         close() {
             this.dialog = false;
+            // $nextTick() performs the enclosed function upon the next DOM update
             this.$nextTick(() => {
                 this.editedVehicle = Object.assign({}, this.defaultVehicle);
                 this.editedIndex = -1;
             });
         },
+        // cancels delete (press "cancel" during deleteVehicleConfirm)
         closeDelete() {
             this.dialogDelete = false;
             this.$nextTick(() => {
@@ -229,6 +244,7 @@ export default {
                 this.editedIndex = -1
             });
         },
+        // add created vehicle to table
         save() {
             if( this.editedIndex > -1 ) {
                 Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
