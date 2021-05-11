@@ -2,8 +2,9 @@
     <v-container>
         <h4 class='display-1'>My Rides</h4>
 
+        <!-- TODO: change v-if statement to match Rides.vue -->
         <v-data-table
-            v-if='myRides'
+            v-if='myRides != 0'
             class='elevation-1'
             :headers='headers'
             :items='myRides'
@@ -37,7 +38,7 @@ export default {
     data() {
         return {
             headers: [
-                { text: 'Ride', align: 'start', sortable: false, value: 'name' },
+                { text: 'Ride', align: 'start', sortable: false, value: 'na me' },
                 { text: 'Date', value: 'date' },
                 //{ text: 'Capacity', value: 'capacity' },
                 { text: 'Passengers', value: 'passengerCount' },
@@ -53,7 +54,7 @@ export default {
     mounted() {
         this.$axios
             .get(`/rides/${this.$store.state.currentUser}`)
-            .then(result => {
+            .then((result) => {
                     if( result.data.ok ) {
                         this.showDialog("Success", result.data.msge);
                         //What is returned?
@@ -67,11 +68,11 @@ export default {
     methods: {
         leaveRide(id) {
             this.$axios
+                // FLIP variables
                 .delete(`/rides/${this.$store.state.currentUser}/${id}`)
                 .then(result => {
                     if( result.data.ok ) {
                         this.showDialog("Success", result.data.msge);
-                        //What is returned?
                         this.myRides = result.data.msge;
                     } else {
                         this.showDialog("Sorry", result.data.msge);

@@ -77,8 +77,8 @@ export default {
                 .then(result => {
                     if( result.data.ok ) {
                         this.showDialog("Success", result.data.msge);
-                        // IMPORTANT - How to remove ride from display?
-                        //this.driverPlans = result.data.msge;
+                        // TODO: remove ride from display
+                        // this.driverPlans = result.data.msge;
                     } else {
                         this.showDialog("Sorry", result.data.msge);
                     }
@@ -92,9 +92,6 @@ export default {
         },
         hideDialog() {
             this.dialogVisible = false;
-            if (this.accountCreated) {
-                this.$router.push({ name: "home-page" });
-            }
         },
     },
 }

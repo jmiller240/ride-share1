@@ -12,7 +12,7 @@
         <template v-slot:item="{ item }">
           <tr>
             <td>{{ item.toLocation.name }}</td>
-            <td>{{ item.date }}</td>
+            <td>{{ item.date[0,11] }}</td>
             <!--td>{{ item.capacity }}</td :disabled='item.capacity < item.passengerCount'-->
             <td>{{ item.passengerCount }}</td>
             <td>{{ item.toLocation.state }}</td>
@@ -20,7 +20,7 @@
             <td>{{ item.toLocation.address }}</td>
             <td>{{ item.toLocation.zipCode }}</td>
             <td>{{ item.vehicle }}</td>
-            <v-btn @click="joinRide(item.id)">Join Ride</v-btn>
+            <v-btn color='green' @click="joinRide(item.id)">Join Ride</v-btn>
           </tr>
         </template>
       </v-data-table>
@@ -107,7 +107,6 @@ export default {
         .then((result) => {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
-            //What is returned?
             this.rides = result.data.msge;
           } else {
             this.showDialog("Sorry", result.data.msge);
@@ -122,9 +121,6 @@ export default {
     },
     hideDialog() {
       this.dialogVisible = false;
-      if (this.accountCreated) {
-        this.$router.push({ name: "home-page" });
-      }
     },
   },
 };

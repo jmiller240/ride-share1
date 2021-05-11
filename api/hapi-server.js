@@ -252,7 +252,7 @@ async function init() {
           let passCountArr = await Ride.query().select().where('id', rideID);
           let passCount = passCountArr[0].passengerCount;
           ++passCount;
-          await Ride.query().patch({ passengerCount: passCount}).where('id', rideID);
+          await Ride.query().patch({ passengerCount: passCount }).where('id', rideID);
           return {
             ok: true,
             msge: `User ${userID} has successfuly joined ride ${rideID}`
