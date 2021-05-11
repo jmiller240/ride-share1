@@ -1,9 +1,9 @@
 <template>
-  <v-container>
+  <v-container :style="{'background-image': 'https://cars.usnews.com/pics/size/640x420/static/images/article/202010/128353/265689_XC60_Inscription_in_Pine_Grey_metallic_Cropped_640x420.jpg'}">
     <v-form>
         <v-container>
           <v-text-field
-            label='Search here!'
+            label='Where would you like to go?'
             :rules="[v => !!v || 'Item is required']"
             v-model='searchKey'
             filled>

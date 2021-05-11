@@ -125,6 +125,8 @@
 
 <script>
 export default {
+    name: "admin",
+    
     data() {
         return {
             dialog: false,

@@ -2,6 +2,7 @@ const { knex } = require("./init");
 
 //const { default: knex } = require("knex");
 const Ride = require("../models/Ride.js");
+const Driver = require("../models/Driver.js");
 
 async function create() {
   const newRide = await Ride.query().insert(
@@ -42,41 +43,37 @@ async function main() {
   //await update();
   //await deleteTest();
 
-  let rideIDs = [];
-  let returnRides = [];
 
-  const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-    builder.where('id', 10);
-  });
-  //console.log(rides)
-  rides.forEach(ride => {
-    if (ride.user.length === 1) {
-      rideIDs.push(ride.id);
-    }
-  });
-  //console.log(rideIDs);
-  /*rideIDs.forEach(async (id) => {
-    //const location = await Ride.query().where('id', id).withGraphFetched('toLocation');
-    console.log(id);
-    //returnRides.push(location[0]);
-  });*/
-
-  for (let i = 0; i < rideIDs.length; i++) {
-    const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
-    returnRides.push(location[0]);
-  }
-
-
-  //console.log(returnRides);
-  if (returnRides.length == 0) {
+  let driverID = await Driver.query().select('id').where('userID', 10);
+  if (driverID == "") {
     console.log( {
       ok: false,
-      msge: `Nothing for 10`
+      msge: `You are not signed up to drive`
+    })
+  }
+
+  driverID = driverID[0].id;
+  const vehicleID = await Ride.query().select('vehicleID').where('id', 6);
+  console.log(vehicleID);
+
+  const isDriver = await knex.select().from('drivers').where('driverID', driverID).andWhere('rideID', 6);
+  const authorized = await knex.select().from('authorization').where('driverID', driverID).andWhere('vehicleID', vehicleID);
+
+  if (isDriver.length >= 1) {
+    console.log({
+      ok: false,
+      msge: `User ${10} is already signed up to drive on ride ${6}`
+    })
+  } else if (authorized.length == 0) {
+    console.log( {
+      ok: false,
+      msge: `User ${10} is not authorized to drive on ride ${6}`
     })
   } else {
-    console.log( {
+    await Ride.relatedQuery('driver').for(6).relate(driverID);
+    console.log({
       ok: true,
-      msge: returnRides
+      msge: `User ${10} is now driving for ride ${6}`
     })
   }
 

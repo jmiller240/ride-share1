@@ -34,7 +34,7 @@
     </div>
 
     <div class="text-xs-center">
-      <v-dialog v-model="dialogVisible" width="500">
+      <v-dialog v-if="dialogVisible" width="500">
         <v-card>
           <v-card-title primary-title>
             {{ dialogHeader }}
@@ -102,7 +102,7 @@ export default {
   methods: {
     joinRide(id) {
       this.$axios
-        .put(`/passengers/${this.$store.state.currentUser}/${id}`)
+        .put(`/passengers/${id}/${this.$store.state.currentUser}`)
         .then((result) => {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);

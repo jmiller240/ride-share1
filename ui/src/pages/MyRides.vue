@@ -53,7 +53,7 @@
 
 <script>
 export default {
-  name: "MyRides",
+  name: "myRides",
 
   data() {
     return {
@@ -69,6 +69,10 @@ export default {
         //{ text: 'Vehicle', value: 'vehicle' },
       ],
       myRides: [],
+
+      dialogHeader: "<no dialogHeader>",
+      dialogText: "<no dialogText>",
+      dialogVisible: false,
 
       errorMessage: "",
     };
@@ -95,7 +99,7 @@ export default {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
             //What is returned?
-            this.myRides = result.data.msge;
+            this.myRides = result.data.newList;
           } else {
             this.showDialog("Sorry", result.data.msge);
           }
@@ -109,9 +113,6 @@ export default {
     },
     hideDialog() {
       this.dialogVisible = false;
-      if (this.accountCreated) {
-        this.$router.push({ name: "home-page" });
-      }
     },
   },
 };
