@@ -120,11 +120,30 @@
                 </template>
             </v-data-table>
         </div>
-
         <!-- Display ride controls -->
         <div>
 
         </div>
+        <!-- display result dialog --> 
+        <div class="text-xs-center">
+        <v-dialog v-model="dialogVisible" width="500">
+          <v-card>
+            <v-card-title primary-title>
+              {{ dialogHeader }}
+            </v-card-title>
+
+            <v-card-text>
+              {{ dialogText }}
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -179,7 +198,7 @@ export default {
     computed: {
         // If editing an item in the table, label the editing form
         formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
+            return this.editedIndex === -1 ? 'New Vehicle' : 'Edit Vehicle';
         },
     },
 
@@ -247,9 +266,61 @@ export default {
             if( this.editedIndex > -1 ) {
                 Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
             } else {
-                this.vehicles.push(this.editedVehicle);
+                if( formTitle === 'New Vehicle' ) {
+                    this.$axios
+                        .put(`/vehicles`, {
+                            make: this.editedVehicle.make,
+                            model: this.editedVehicle.model,
+                            color: this.editedVehicle.color,
+                            type: this.editedVehicle.type,
+                            mpg: this.editedVehicle.mpg,
+                            licenseState: this.editedVehicle.licenseState,
+                            licensePlate: this.editedVehicle.licensePlate,
+                        })
+                        .then((result) => {
+                            if( result.data.ok ) {
+                                this.showDialog('Success', result.data.msge);
+                                this.vehicles.push(this.editedVehicle);
+                            } else {
+                                this.showDialog('Sorry', result.data.msge);
+                            }
+                        })
+                        .catch(err => this.showDialog('ERROR', err));
+                } else {
+                    this.$axios
+                        .patch(`/vehicles`, {
+                            make: this.editedVehicle.make,
+                            model: this.editedVehicle.model,
+                            color: this.editedVehicle.color,
+                            type: this.editedVehicle.type,
+                            mpg: this.editedVehicle.mpg,
+                            licenseState: this.editedVehicle.licenseState,
+                            licensePlate: this.editedVehicle.licensePlate,
+                        })
+                        .then((result) => {
+                            if( result.data.ok ) {
+                                this.showDialog('Success', result.data.msge);
+                                this.vehicles.push(this.editedVehicle);
+                            } else {
+                                this.showDialog('Sorry', result.data.msge);
+                            }
+                        })
+                        .catch(err => this.showDialog('ERROR', err));
+                }
             }
             this.close();
+        },
+        showDialog: function (header, text) {
+            this.dialogHeader = header;
+            this.dialogText = text;
+            this.dialogVisible = true;
+        },
+        hideDialog: function () {
+            this.dialogVisible = false;
+            if (this.accountCreated) {
+                // Only navigate away from the sign-up page if we were successful.
+                this.$router.push({ name: "home-page" });
+            }
         },
     },
 }

@@ -9,6 +9,8 @@ import MyRides from "./pages/MyRides.vue";
 import DriverDetails from "./pages/DriverDetails.vue";
 import Rides from "./pages/Rides.vue";
 
+import DriverSignUp from "./pages/DriverSignUp.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -22,6 +24,8 @@ export default new Router({
 
     { name: "sign-up", path: "/sign-up", component: SignUp },
     { name: "sign-in", path: "/sign-in", component: SignIn },
-    { name: "accounts", path: "/accounts", component: Accounts }
+    { name: "accounts", path: "/accounts", component: Accounts },
+
+    { name: "driverSignUp", path: "/driverSignUp", component: DriverSignUp },
   ]
 });
