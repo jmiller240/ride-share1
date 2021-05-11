@@ -18,7 +18,7 @@ class Ride extends Model {
                 join: {
                     from: 'ride.vehicleID',
                     to: 'vehicle.id'
-                } 
+                }
             },
             //Do we use two separate relations???
             fromLocation: {
@@ -62,6 +62,50 @@ class Ride extends Model {
                 }
             },
         }
+    }
+
+    static async getRides(userID) {
+        let rideIDs = [];
+        let returnRides = [];
+
+        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
+            builder.where('id', userID);
+        });
+
+        rides.forEach(ride => {
+            if (ride.user.length === 1) {
+                rideIDs.push(ride.id);
+            }
+        });
+
+        for (let i = 0; i < rideIDs.length; i++) {
+            const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
+            returnRides.push(location[0]);
+        }
+
+        return returnRides;
+    }
+
+    static async getDrives(driverID) {
+        let rideIDs = [];
+        let returnDrives = [];
+
+        const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
+          builder.where('id', driverID);
+        });
+
+        rides.forEach(ride => {
+          if (ride.driver.length === 1) {
+            rideIDs.push(ride.id);
+          }
+        });
+
+        for (let i = 0; i < rideIDs.length; i++) {
+          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
+          returnDrives.push(location[0]);
+        }
+        
+        return returnDrives;
     }
 }
 

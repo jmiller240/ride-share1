@@ -98,7 +98,7 @@ async function init() {
 
     {
       method: 'PUT',
-      path: '/passengers/{userID}/{rideID}',
+      path: '/passengers/{rideID}/{userID}',
       config: {
         description: 'User can join a ride',
         validate: {
@@ -151,6 +151,57 @@ async function init() {
     },
 
     {
+      method: 'PUT',
+      path: '/drivers/{rideID}/{userID}',
+      config: {
+        description: 'User can sign up to drive for ride',
+        validate: {
+          params: Joi.object({
+            userID: Joi.number().integer().min(1),
+            rideID: Joi.number().integer().min(1)
+          })
+        }
+      },
+      handler: async (request, h) => {
+        const userID = request.params.userID;
+        const rideID = request.params.rideID;
+
+        let driverID = await Driver.query().select('id').where('userID', userID);
+        if (driverID == "") {
+          return {
+            ok: false,
+            msge: `You are not signed up to drive`
+          }
+        }
+
+        driverID = driverID[0].id;
+        let vehicleID = await Ride.query().select('vehicleID').where('id', rideID);
+        vehicleID = vehicleID[0].vehicleID;
+
+        const isDriver = await knex.select().from('drivers').where('driverID', driverID).andWhere('rideID', rideID);
+        const authorized = await knex.select().from('authorization').where('driverID', driverID).andWhere('vehicleID', vehicleID);
+
+        if (isDriver.length >= 1) {
+          return {
+            ok: false,
+            msge: `User ${userID} is already signed up to drive on ride ${rideID}`
+          }
+        } else if (authorized.length == 0) {
+          return {
+            ok: false,
+            msge: `User ${userID} is not authorized to drive on ride ${rideID}`
+          }
+        } else {
+          await Ride.relatedQuery('driver').for(rideID).relate(driverID);
+          return {
+            ok: true,
+            msge: `User ${userID} is now driving for ride ${rideID}`
+          }
+        }
+      },
+    },
+
+    {
       method: "GET",
       path: '/rides/{userID}',
       config: {
@@ -163,23 +214,7 @@ async function init() {
       },
       handler: async (request, h) => {
         const userID = request.params.userID;
-        let rideIDs = [];
-        let returnRides = [];
-
-        const rides = await Ride.query().withGraphFetched('user').modifyGraph('user', builder => {
-          builder.where('id', userID);
-        });
-
-        rides.forEach(ride => {
-          if (ride.user.length === 1) {
-            rideIDs.push(ride.id);
-          }
-        });
-
-        for (let i = 0; i < rideIDs.length; i++) {
-          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
-          returnRides.push(location[0]);
-        }
+        const returnRides = await Ride.getRides(userID);
 
         if (returnRides.length == 0) {
           return {
@@ -211,11 +246,18 @@ async function init() {
         const rideID = request.params.rideID;
         const ride = await Ride.relatedQuery('user').for(rideID).unrelate().where('id', request.params.userID).returning('*');
         // Decrement passengerCount
+        let passCountArr = await Ride.query().select().where('id', rideID);
+        let passCount = passCountArr[0].passengerCount;
+        --passCount;
+        await Ride.query().patch({ passengerCount: passCount }).where('id', rideID);
+
+        const returnRides = await Ride.getRides(request.params.userID);
 
         if (ride == 1) {
           return {
             ok: true,
-            msge: `Successfully left ride ${rideID}`
+            msge: `Successfully left ride ${rideID}`,
+            newList: returnRides
           }
         } else {
           return {
@@ -239,6 +281,7 @@ async function init() {
       },
       handler: async (request, h) => {
         const userID = request.params.userID;
+
         let driverID = await Driver.query().select('id').where('userID', userID);
         if (driverID == "") {
           return {
@@ -246,26 +289,11 @@ async function init() {
             msge: `You are not signed up to drive`
           }
         }
+
         driverID = driverID[0].id;
-        let rideIDs = [];
-        let returnRides = [];
+        const returnDrives = await Ride.getDrives(driverID);
 
-        const rides = await Ride.query().withGraphFetched('driver').modifyGraph('driver', builder => {
-          builder.where('id', driverID);
-        });
-
-        rides.forEach(ride => {
-          if (ride.driver.length === 1) {
-            rideIDs.push(ride.id);
-          }
-        });
-
-        for (let i = 0; i < rideIDs.length; i++) {
-          const location = await Ride.query().where('id', rideIDs[i]).withGraphFetched('toLocation');
-          returnRides.push(location[0]);
-        }
-
-        if (returnRides.length == 0) {
+        if (returnDrives.length == 0) {
           return {
             ok: false,
             msge: `Nothing for user ${userID}`
@@ -273,7 +301,7 @@ async function init() {
         } else {
           return {
             ok: true,
-            msge: returnRides
+            msge: returnDrives
           }
         };
       }
@@ -297,10 +325,13 @@ async function init() {
         const rideID = request.params.rideID;
 
         const ride = await Ride.relatedQuery('driver').for(rideID).unrelate().where('id', driverID).returning('*');
+        const returnDrives = await Ride.getDrives(driverID);
+
         if (ride == 1) {
           return {
             ok: true,
-            msge: `Successfully left ride ${rideID}`
+            msge: `Successfully left ride ${rideID}`,
+            newList: returnDrives
           }
         } else {
           return {
