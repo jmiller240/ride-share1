@@ -15,7 +15,7 @@
         :rules="[(v) => !!v || 'Item is required']"
         required
       />
-      <v-btn :disabled="!valid" @click="handleSubmit"> Sign Up </v-btn>
+      <v-btn :disabled="!valid" color="#60944D" @click="handleSubmit"> Sign Up </v-btn>
     </v-form>
 
     <div class="text-xs-center">
@@ -33,7 +33,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="#60944D" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="##464343" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

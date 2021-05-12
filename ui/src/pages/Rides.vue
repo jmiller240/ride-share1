@@ -28,7 +28,7 @@
         <p>{{ errorMessage }}</p>
       </div>
       <div>
-        <v-btn color="#464343" text :to="{ name: 'home-page' }"
+        <v-btn color="#60944D" text :to="{ name: 'home-page' }"
           >Search again</v-btn
         >
       </div>

@@ -19,7 +19,7 @@
           
           <v-divider></v-divider>
 
-          <v-btn @click='search'>Search</v-btn>
+          <v-btn color="#60944D" @click='search'>Search</v-btn>
         </v-container>
     </v-form>
 
@@ -85,7 +85,7 @@
 <style scoped>
   #home {
     background: url("https://cars.usnews.com/pics/size/640x420/static/images/article/202010/128353/265689_XC60_Inscription_in_Pine_Grey_metallic_Cropped_640x420.jpg");
-    background-size: auto;
+    background-size: cover;
   }
 </style>
 

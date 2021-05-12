@@ -18,13 +18,13 @@
           <td>{{ item.toLocation.city }}</td>
           <td>{{ item.toLocation.address }}</td>
           <td>{{ item.toLocation.zipCode }}</td>
-          <v-btn color="red" @click="cancelDrive(item.id)">Cancel</v-btn>
+          <v-btn color="#941920" @click="cancelDrive(item.id)">Cancel</v-btn>
         </tr>
       </template>
     </v-data-table>
     <div v-else>
       <p>{{ errorMessage }}</p>
-      <v-btn color="primary" text :to="{ name: 'home-page' }"
+      <v-btn color="#60944D" text :to="{ name: 'home-page' }"
         >Search Rides</v-btn
       >
     </div>
@@ -44,7 +44,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="#464343" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

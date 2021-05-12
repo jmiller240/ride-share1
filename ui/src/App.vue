@@ -2,7 +2,7 @@
   <v-app>
     <nav-bar />
     <v-content>
-      <v-container>
+      <v-container id="home">
         <router-view></router-view>
       </v-container>
     </v-content>
@@ -24,3 +24,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  #home {
+    background-size: cover;
+  }
+</style>
+
+
