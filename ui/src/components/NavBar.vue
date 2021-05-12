@@ -11,7 +11,7 @@
 
     <v-btn text :to="{ name: 'myRides' }">My Rides</v-btn>
     <v-btn text :to="{ name: 'driverDetails' }">Driver Details</v-btn>
-    <v-btn v-if='!this.$store.state.isDriver' text :to="{ name: 'driverSignUp' }">Driver Sign Up</v-btn>
+    <v-btn :hidden='checkDriver' text :to="{ name: 'driverSignUp' }">Driver Sign Up</v-btn>
     <v-btn text :to="{ name: 'admin' }">Admin</v-btn>
 
   </v-app-bar>
@@ -21,8 +21,19 @@
 export default {
   name: 'nav-bar',
 
-  mounted() {
-    this.$store.commit('checkDriver')
+  computed: {
+    checkDriver() {
+      this.$axios
+        .get(`drives/${state.currentUser}`)
+        .then(result => {
+          if( result.data.msge === `You are not signed up to drive` ) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch(err => console.log(err));
+    }
   }
 }
 </script>
