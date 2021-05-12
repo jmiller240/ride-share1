@@ -20,9 +20,12 @@
             <td>{{ item.mpg }}</td>
             <td>{{ item.licenseState }}</td>
             <td>{{ item.licensePlate }}</td>
-            <v-icon small class='ml-2' color='#464343' @click='editVehicleItem(item)'>mdi-wrench</v-icon>
+            <v-icon small class='ml-2' color='#464343' @click='editVehicleItem(item, item.id)'>mdi-wrench</v-icon>
             <v-icon small class='ml-2' color='#464343' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
           </tr>
+
+          <v-spacer />
+          <v-btn text color='#60944D' @click='send'>Send</v-btn>
         </template>
 
         <template v-slot:top>
@@ -260,10 +263,20 @@ export default {
       this.editedVehicle = Object.assign({}, item);
       this.dialog = true;
     },
-    deleteVehicleItem(item) {
+    deleteVehicleItem(item, id) {
       this.editedIndex = this.vehicles.indexOf(item);
       this.editedVehicle = Object.assign({}, item);
       this.dialogDelete = true;
+      this.$$axios
+        .del(`/vehicles/${id}`)
+        .then((result) => {
+          if( result.data.ok ) {
+            this.showDialog("Success", result.data.msge);
+          } else {
+            this.showDialog("Failure", result.data.msge);
+          }
+        })
+        .catch(err => this.showDialog('ERROR', err));
     },
     // deletes item (press "OK" during deleteVehicleConfirm)
     deleteVehicleConfirm() {
@@ -292,6 +305,8 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
       } else {
+        this.vehicles.push(this.editedVehicle);
+        /*
         if( this.newVehicle === true ) {
           this.$axios
             .put(`/vehicles`, {
@@ -313,27 +328,8 @@ export default {
               }
             })
             .catch((err) => this.showDialog("ERROR", err));
-        } else {
-          this.$axios
-            .patch(`/vehicles`, {
-              make: this.editedVehicle.make,
-              model: this.editedVehicle.model,
-              color: this.editedVehicle.color,
-              type: this.editedVehicle.type,
-              mpg: this.editedVehicle.mpg,
-              licenseState: this.editedVehicle.licenseState,
-              licensePlate: this.editedVehicle.licensePlate,
-            })
-            .then((result) => {
-              if (result.data.ok) {
-                this.showDialog("Success", result.data.msge);
-                this.vehicles.push(this.editedVehicle);
-              } else {
-                this.showDialog("Sorry", result.data.msge);
-              }
-            })
-            .catch((err) => this.showDialog("ERROR", err));
         }
+        */
       }
       this.close();
     },
@@ -341,6 +337,29 @@ export default {
         if( this.newVehicle === false ) {
             this.newVehicle = true;
         }
+    },
+    send() {
+      for( vehicle in this.vehicles ) {
+        this.$axios
+          .put(`/vehicles`, {
+            make: vehicle.make,
+            model: vehicle.model,
+            color: vehicle.color,
+            type: vehicle.type,
+            mpg: vehicle.mpg,
+            licenseState: vehicle.licenseState,
+            licensePlate: vehicle.licensePlate,
+          })
+          .then(result => {
+            if( result.data.ok ) {
+              console.log(`SUCCESS: ${result.data.msge}`);
+            } else {
+              console.log(`FAILED: ${result.data.msge}`);
+            }
+          })
+          .catch(err => `ERROR: ${err}`);
+      }
+
     },
     showDialog: function (header, text) {
       this.dialogHeader = header;
