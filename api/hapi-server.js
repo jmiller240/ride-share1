@@ -368,7 +368,7 @@ async function init() {
             make: Joi.string(),
             model: Joi.string(),
             color: Joi.string(),
-            vehicleTypeID: Joi.number().integer().min(1),
+            type: Joi.number().integer().min(1),
             capacity: Joi.number().integer().min(1),
             mpg: Joi.number().min(1),
             licenseState: Joi.string(),
@@ -444,10 +444,11 @@ async function init() {
             ok: false,
             msge: `Something went wrong creating new vehicle`
           }
-        }
-        
+        }      
       }
     },
+
+
 
     {
       method: "POST",
