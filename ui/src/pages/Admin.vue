@@ -267,7 +267,7 @@ export default {
       this.editedIndex = this.vehicles.indexOf(item);
       this.editedVehicle = Object.assign({}, item);
       this.dialogDelete = true;
-      this.$$axios
+      this.$axios
         .del(`/vehicles/${id}`)
         .then((result) => {
           if( result.data.ok ) {
@@ -339,13 +339,14 @@ export default {
         }
     },
     send() {
-      for( vehicle in this.vehicles ) {
+      this.vehicles.forEach(vehicle => {
         this.$axios
           .put(`/vehicles`, {
             make: vehicle.make,
             model: vehicle.model,
             color: vehicle.color,
-            type: vehicle.type,
+            //type: vehicle.type,
+            capacity: vehicle.capacity,
             mpg: vehicle.mpg,
             licenseState: vehicle.licenseState,
             licensePlate: vehicle.licensePlate,
@@ -358,7 +359,7 @@ export default {
             }
           })
           .catch(err => `ERROR: ${err}`);
-      }
+      })
 
     },
     showDialog: function (header, text) {
