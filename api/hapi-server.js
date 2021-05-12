@@ -448,6 +448,41 @@ async function init() {
       }
     },
 
+    {
+      method: "DELETE",
+      path: '/vehicles/{id}',
+      config: {
+        description: 'Delete a vehicle',
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().min(1)
+        })
+      }
+      },
+      handler: async (request, h) => {
+        const vehicleID = request.params.id;
+        // Unrelate from ride and driver
+        const ride = await Vehicle.relatedQuery('ride').for(vehicleID).unrelate().where('vehicleID', vehicleID).returning("*");
+        const driver = await Vehicle.relatedQuery('driver').for(vehicleID).unrelate().returning("*");
+
+        // Delete
+        const delVehicle = await Vehicle.query().deleteById(vehicleID);
+
+        if (delVehicle) {
+          return {
+            ok: true,
+            msge: `Succesfully deleted vehicle with id ${vehicleID}`,
+            //newList: await Vehicle.query().select()
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `Something went wrong deleting vehicle ${vehicleID}`
+          }
+        }      
+      }
+    },
+
 
 
     {
