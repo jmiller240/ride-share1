@@ -13,7 +13,7 @@
 export default {
     data() {
         return {
-            newUser = 0,
+            newUser: 0,
         }
     },
     methods: {
