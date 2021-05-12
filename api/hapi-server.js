@@ -25,7 +25,7 @@ const VehicleType = require("./models/VehicleType");
 // Hapi
 const Joi = require("@hapi/joi"); // Input validation
 const Hapi = require("@hapi/hapi"); // Server
-const { query } = require("../api/models/Ride");
+const { query, JoinEagerAlgorithm } = require("../api/models/Ride");
 
 const server = Hapi.server({
   host: "localhost",
@@ -341,6 +341,111 @@ async function init() {
         }
       }
     },
+
+    {
+      method: "GET",
+      path: '/vehicles',
+      config: {
+        description: 'Display vehicles for admin'
+      },
+      handler: async (request, h) => {
+        return await Vehicle.query().select();
+      }
+    },
+
+    {
+      method: "PATCH",
+      path: '/vehicles/{id}',
+      config: {
+        description: 'Modify a vehicle',
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().min(1)
+          }),
+          payload: Joi.object({
+            make: Joi.string(),
+            model: Joi.string(),
+            color: Joi.string(),
+            vehicleTypeID: Joi.number().integer().min(1),
+            capacity: Joi.number().integer().min(1),
+            mpg: Joi.number().min(1),
+            licenseState: Joi.string(),
+            licensePlate: Joi.string(),
+        })
+      }
+      },
+      handler: async (request, h) => {
+        /*if (request.payload.vehicleTypeID) {
+          const vehicleType = await VehicleType.query().select().where('id', request.payload.vehicleTypeID);
+          if (vehicleType.length == 0) {
+            return {
+              ok: false,
+              msge: `Vehicle type ${request.payload.vehicleTypeID} doesn't exist`
+            }
+          }
+        }
+        if (request.payload.licenseState) {
+          const state = await State.query().select().where('abbreviation', request.payload.licenseState);
+          if (state.length == 0) {
+            return {
+              ok: false,
+              msge: `Can't find state ${request.payload.licenseState}`
+            }
+          }
+        }*/
+
+        const modVehicle = await Vehicle.query().patch(request.payload).where('id', request.params.id).returning('*');
+        if (modVehicle.length == 1) {
+          return {
+            ok: true,
+            msge: `Succesfully modified vehicle ${request.params.id}`,
+            newList: await Vehicle.query().select()
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `Something went wrong modifying vehicle ${request.params.id}`
+          }
+        }
+        
+      }
+    },
+
+    {
+      method: "POST",
+      path: '/vehicles',
+      config: {
+        description: 'Create a vehicle',
+        validate: {
+          payload: Joi.object({
+            make: Joi.string().required(),
+            model: Joi.string().required(),
+            color: Joi.string().required(),
+            vehicleTypeID: Joi.number().integer().min(1).required(),
+            capacity: Joi.number().integer().min(1).required(),
+            mpg: Joi.number().min(1).required(),
+            licenseState: Joi.string().required(),
+            licensePlate: Joi.string().required(),
+        })
+      }
+      },
+      handler: async (request, h) => {
+        const newVehicle = await Vehicle.query().insert(request.payload).returning('*');
+        if (newVehicle) {
+          return {
+            ok: true,
+            msge: `Succesfully created new vehicle with id ${newVehicle.id}`,
+            newList: await Vehicle.query().select()
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `Something went wrong creating new vehicle`
+          }
+        }
+        
+      }
+    }
 
 
 
