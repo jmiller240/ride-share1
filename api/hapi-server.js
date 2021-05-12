@@ -31,10 +31,7 @@ const server = Hapi.server({
   host: "localhost",
   port: 3000,
   routes: {
-    // cors: true,
-    cors: {
-      origin: "*",
-    }
+    cors: true,
   },
 });
 
@@ -359,7 +356,7 @@ async function init() {
     },
 
     {
-      method: "PATCH",
+      method: "PUT",
       path: '/vehicles/{id}',
       config: {
         description: 'Modify a vehicle',

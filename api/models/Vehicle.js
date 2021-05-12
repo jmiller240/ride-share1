@@ -9,6 +9,7 @@ class Vehicle extends Model {
     }
     static get relationMappings() {
         const Driver = require('./Driver');
+        const Ride = require("./Ride");
         return {
             vehicleType: {
                 relation: Model.BelongsToOneRelation,
@@ -36,6 +37,14 @@ class Vehicle extends Model {
                         to: 'authorization.driverID'
                     },
                     to: 'driver.id'
+                }
+            },
+            ride: {
+                relation: Model.HasManyRelation,
+                modelClass: Ride,
+                join: {
+                    from: 'vehicle.id',
+                    to: 'ride.vehicleID'
                 }
             }
         }

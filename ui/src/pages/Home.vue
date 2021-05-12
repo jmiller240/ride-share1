@@ -1,5 +1,5 @@
 <template>
-  <v-container id="home">
+  <v-container>
     <v-form>
         <v-container>
           <v-text-field
@@ -82,7 +82,9 @@
     },
   }
 </script>
-<style scoped>
+
+
+<!-- <style scoped>
   #home {
     background: url("https://cars.usnews.com/pics/size/640x420/static/images/article/202010/128353/265689_XC60_Inscription_in_Pine_Grey_metallic_Cropped_640x420.jpg");
     background-size: auto;
@@ -90,5 +92,5 @@
   v-text-field, v-select {
     color: white;
   }
-</style>
+</style> -->
 

@@ -17,7 +17,7 @@
           <td>{{ item.toLocation.city }}</td>
           <td>{{ item.toLocation.address }}</td>
           <td>{{ item.toLocation.zipCode }}</td>
-          <v-btn color="#941920" @click="leaveRide(item.id)">Leave Ride</v-btn>
+          <v-btn color="#cf142b" @click="leaveRide(item.id)">Leave Ride</v-btn>
         </tr>
       </template>
     </v-data-table>

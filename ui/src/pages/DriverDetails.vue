@@ -18,7 +18,7 @@
           <td>{{ item.toLocation.city }}</td>
           <td>{{ item.toLocation.address }}</td>
           <td>{{ item.toLocation.zipCode }}</td>
-          <v-btn color="#941920" @click="cancelDrive(item.id)">Cancel</v-btn>
+          <v-btn color="#cf142b" @click="cancelDrive(item.id)">Cancel</v-btn>
         </tr>
       </template>
     </v-data-table>

@@ -20,8 +20,20 @@
             <td>{{ item.mpg }}</td>
             <td>{{ item.licenseState }}</td>
             <td>{{ item.licensePlate }}</td>
-            <v-icon small class='ml-2' color='#464343' @click='editVehicleItem(item, item.id)'>mdi-wrench</v-icon>
-            <v-icon small class='ml-2' color='#464343' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
+            <v-icon
+              small
+              class="ml-2"
+              color="#464343"
+              @click="editVehicleItem(item)"
+              >mdi-wrench</v-icon
+            >
+            <v-icon
+              small
+              class="ml-2"
+              color="#464343"
+              @click="deleteVehicleItem(item, item.id)"
+              >mdi-delete</v-icon
+            >
           </tr>
         </template>
 
@@ -34,12 +46,12 @@
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  color="#464343"
+                  color="#60944D"
                   dark
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on"
-                  @click='setNewVehicle'
+                  @click="setNewVehicle"
                 >
                   New Vehicle
                 </v-btn>
@@ -104,9 +116,7 @@
                 <!-- Keep or discard new vehicle -->
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="red" text @click="close">
-                    Cancel
-                  </v-btn>
+                  <v-btn color="#cf142b" text @click="close"> Cancel </v-btn>
                   <v-btn color="#464343" text @click="save"> Save </v-btn>
                 </v-card-actions>
               </v-card>
@@ -120,13 +130,8 @@
                 >
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="red" text @click="closeDelete"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    color="#464343"
-                    text
-                    @click="deleteVehicleConfirm"
+                  <v-btn color="#cf142b" text @click="closeDelete">Cancel</v-btn>
+                  <v-btn color="#464343" text @click="deleteVehicleConfirm"
                     >OK</v-btn
                   >
                 </v-card-actions>
@@ -135,14 +140,14 @@
           </v-toolbar>
         </template>
 
-        <!-- Vehicle table actions -->
+        <!--  Vehicle table actions
         <template v-slot:[`item.actions`]="{ item }">
-          <!-- TODO: change buttons to icons -->
+          
           <v-btn text @click="editVehicleItem(item)"> Edit </v-btn>
           <v-btn text @click="deleteVehicleItem(item)"> Delete </v-btn>
-        </template>
+        </template> -->
       </v-data-table>
-      <v-btn text color='#60944D' @click='send'>Send</v-btn>
+      <v-btn text color="#60944D" @click="send">Send</v-btn>
     </div>
     <!-- Display ride controls -->
     <div></div>
@@ -262,19 +267,20 @@ export default {
       this.dialog = true;
     },
     deleteVehicleItem(item, id) {
-      this.editedIndex = this.vehicles.indexOf(item);
-      this.editedVehicle = Object.assign({}, item);
-      this.dialogDelete = true;
       this.$axios
-        .del(`/vehicles/${id}`)
+        .delete(`/vehicles/${id}`)
         .then((result) => {
-          if( result.data.ok ) {
+          if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
           } else {
             this.showDialog("Failure", result.data.msge);
           }
         })
-        .catch(err => this.showDialog('ERROR', err));
+        .catch((err) => this.showDialog("ERROR", err));
+
+      this.editedIndex = this.vehicles.indexOf(item);
+      this.editedVehicle = Object.assign({}, item);
+      this.dialogDelete = true;
     },
     // deletes item (press "OK" during deleteVehicleConfirm)
     deleteVehicleConfirm() {
@@ -332,33 +338,32 @@ export default {
       this.close();
     },
     setNewVehicle() {
-        if( this.newVehicle === false ) {
-            this.newVehicle = true;
-        }
+      if (this.newVehicle === false) {
+        this.newVehicle = true;
+      }
     },
     send() {
-      this.vehicles.forEach(vehicle => {
+      this.vehicles.forEach((vehicle) => {
         this.$axios
-          .put(`/vehicles`, {
+          .patch(`/vehicles`, {
             make: vehicle.make,
             model: vehicle.model,
             color: vehicle.color,
-            //type: vehicle.type,
+            type: vehicle.vehicleTypeID,
             capacity: vehicle.capacity,
             mpg: vehicle.mpg,
             licenseState: vehicle.licenseState,
             licensePlate: vehicle.licensePlate,
           })
-          .then(result => {
-            if( result.data.ok ) {
+          .then((result) => {
+            if (result.data.ok) {
               console.log(`SUCCESS: ${result.data.msge}`);
             } else {
               console.log(`FAILED: ${result.data.msge}`);
             }
           })
-          .catch(err => `ERROR: ${err}`);
-      })
-
+          .catch((err) => `ERROR: ${err}`);
+      });
     },
     showDialog: function (header, text) {
       this.dialogHeader = header;
