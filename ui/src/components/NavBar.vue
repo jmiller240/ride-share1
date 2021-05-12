@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app dark color="#464343">
     <router-link color='#FFFFFF' v-bind:to="{ name: 'home-page' }">
-      <v-toolbar-title class="title">
+      <v-toolbar-title class="white--text">
         pdrivep
       </v-toolbar-title>
     </router-link>
