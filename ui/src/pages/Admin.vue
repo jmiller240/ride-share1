@@ -218,7 +218,7 @@ export default {
         licensePlate: "",
       },
 
-      newVehicle = false,
+      newVehicle: false,
     };
   },
 
