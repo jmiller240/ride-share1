@@ -23,9 +23,6 @@
             <v-icon small class='ml-2' color='#464343' @click='editVehicleItem(item, item.id)'>mdi-wrench</v-icon>
             <v-icon small class='ml-2' color='#464343' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
           </tr>
-
-          <v-spacer />
-          <v-btn text color='#60944D' @click='send'>Send</v-btn>
         </template>
 
         <template v-slot:top>
@@ -145,6 +142,7 @@
           <v-btn text @click="deleteVehicleItem(item)"> Delete </v-btn>
         </template>
       </v-data-table>
+      <v-btn text color='#60944D' @click='send'>Send</v-btn>
     </div>
     <!-- Display ride controls -->
     <div></div>
