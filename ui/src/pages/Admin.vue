@@ -56,7 +56,7 @@
                   New Vehicle
                 </v-btn>
               </template>
-              <!-- Display table -->
+              <!-- Display edit form -->
               <v-card>
                 <v-card-title
                   ><span class="headline">{{ formTitle }}</span></v-card-title
@@ -140,17 +140,10 @@
           </v-toolbar>
         </template>
 
-        <!--  Vehicle table actions
-        <template v-slot:[`item.actions`]="{ item }">
-          
-          <v-btn text @click="editVehicleItem(item)"> Edit </v-btn>
-          <v-btn text @click="deleteVehicleItem(item)"> Delete </v-btn>
-        </template> -->
       </v-data-table>
       <v-btn text color="#60944D" @click="send">Send</v-btn>
     </div>
-    <!-- Display ride controls -->
-    <div></div>
+    <!-- TODO: Display ride controls -->
 
     <!-- display result dialog -->
     <div class="text-xs-center">
@@ -310,30 +303,6 @@ export default {
         Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
       } else {
         this.vehicles.push(this.editedVehicle);
-        /*
-        if( this.newVehicle === true ) {
-          this.$axios
-            .put(`/vehicles`, {
-              make: this.editedVehicle.make,
-              model: this.editedVehicle.model,
-              color: this.editedVehicle.color,
-              type: this.editedVehicle.type,
-              mpg: this.editedVehicle.mpg,
-              licenseState: this.editedVehicle.licenseState,
-              licensePlate: this.editedVehicle.licensePlate,
-            })
-            .then((result) => {
-              if (result.data.ok) {
-                this.showDialog("Success", result.data.msge);
-                this.vehicles.push(this.editedVehicle);
-                this.newVehicle = false;
-              } else {
-                this.showDialog("Sorry", result.data.msge);
-              }
-            })
-            .catch((err) => this.showDialog("ERROR", err));
-        }
-        */
       }
       this.close();
     },
@@ -342,6 +311,7 @@ export default {
         this.newVehicle = true;
       }
     },
+    // Send all updates made to server
     send() {
       this.vehicles.forEach((vehicle) => {
         this.$axios
@@ -372,10 +342,6 @@ export default {
     },
     hideDialog: function () {
       this.dialogVisible = false;
-      if (this.accountCreated) {
-        // Only navigate away from the sign-up page if we were successful.
-        this.$router.push({ name: "home-page" });
-      }
     },
   },
 };
