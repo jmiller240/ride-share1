@@ -103,10 +103,10 @@
                 <!-- Keep or discard new vehicle -->
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
+                  <v-btn color="red" text @click="close">
                     Cancel
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                  <v-btn color="accent" text @click="save"> Save </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -119,11 +119,11 @@
                 >
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete"
+                  <v-btn color="red" text @click="closeDelete"
                     >Cancel</v-btn
                   >
                   <v-btn
-                    color="blue darken-1"
+                    color="accent"
                     text
                     @click="deleteVehicleConfirm"
                     >OK</v-btn
@@ -161,7 +161,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="accent" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
