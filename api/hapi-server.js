@@ -115,7 +115,6 @@ async function init() {
         const ride = await Ride.query().withGraphFetched('vehicle').where('id', rideID);
         const userRide = await knex.select().from('passenger').where('userID', userID).andWhere('rideID', rideID);
 
-        // cant join ride twice
         if (user.length !== 1) {
           return {
             ok: false,
@@ -144,7 +143,7 @@ async function init() {
           await Ride.query().patch({ passengerCount: passCount }).where('id', rideID);
           return {
             ok: true,
-            msge: `User ${userID} has successfuly joined ride ${rideID}`
+            msge: `User ${userID} has successfuly joined ride ${rideID}`,
           }
         }
       },
@@ -349,7 +348,10 @@ async function init() {
         description: 'Display vehicles for admin'
       },
       handler: async (request, h) => {
-        return await Vehicle.query().select();
+        return {
+          ok: true,
+          msge: await Vehicle.query().withGraphFetched('vehicleType')
+        }
       }
     },
 
@@ -445,72 +447,39 @@ async function init() {
         }
         
       }
-    }
+    },
 
-
-
-
-
-    /*{ 
-      methods: 'PUT',
-      path: '/drivers/{userID}/{rideID}',
+    {
+      method: "POST",
+      path: '/drivers',
       config: {
-        description: 'Sign up to drive for a ride',
+        description: 'Sign up to drive',
         validate: {
-          params: Joi.object({
-            driverID: Joi.number().integer().min(1),
-            rideID: Joi.number().integer().min(1),
-          }),
-        },
+          payload: Joi.object({
+            userID: Joi.number().integer().min(1),
+            licenseNumber: Joi.string().required(),
+            licenseState: Joi.string().required(),
+        })
+      }
       },
       handler: async (request, h) => {
-        const userID = request.params.driverID;
-        const rideID = request.params.rideID;
-        const vehicleID = await Ride.query().select('vehicleId').where('id', rideID);
-
-        // User has to be driver
-        const userDriver = await Driver.query().select().where('userID', userID);
-        if (userDriver.length != 1) {
-          return {
-            ok: false,
-            msge: `User ${userID} is not signed up to drive`
-          }
-        }
-
-        // Check to see if driver can drive the given vehicle
-
-        // Driver doesn't have vehicle ID    // const driverAuthorized = await Driver.query().withGraphFetched('vehicle').where('id', driverID).andWhere('vehicle.id', vehicleID);
-
-        if( driver.length !== 1 ) {
-          return {
-            ok: false,
-            msge: `Driver with id ${driverID} does not exist`,
-          };
-        } else if ( ride.length !== 1 ) {
-          return {
-            ok: false,
-            msge: `Ride with id ${rideID} does not exist`,
-          };
-        } else if ( driverRide.length != 1 ) {
-          return {
-            ok: false,
-            msge: `Ride ${rideID} does not have driver ${driverID}`,
-          };
-        } else if( driverAuthorized.length !== 1 ) { 
-          return {
-            ok: false,
-            msge: `Driver ${driverID} is not authorized to drive vehicle`
-          }
-        } else {
-          await Ride.relatedQuery('driver').for(rideID).delete().where('driverId', driverID);
+        const userID = request.payload.userID;
+        const driver = await Driver.query().select().where('userID', userID);
+        if (driver.length == 0) {
+          const newDriver = await Driver.query().insert(request.payload).returning("*");
           return {
             ok: true,
-            msge: `Driver ${driverID} removed from ride ${rideID}`,
-          };
+            msge: `Succesfully registered to drive with driver id ${newDriver.id}`,
+          }
+        } else {
+          return {
+            ok: false,
+            msge: `User ${userID} is already registered to drive!`
+          }
         }
-
-      },
-    }*/
+        
+      }
+    }
 
 
   ]);

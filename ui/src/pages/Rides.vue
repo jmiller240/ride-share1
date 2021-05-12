@@ -20,6 +20,7 @@
             <td>{{ item.toLocation.address }}</td>
             <td>{{ item.toLocation.zipCode }}</td>
             <v-btn @click="joinRide(item.id)">Join Ride</v-btn>
+            <v-btn @click="driveRide(item.id)">Drive</v-btn>
           </tr>
         </template>
       </v-data-table>
@@ -34,7 +35,7 @@
     </div>
 
     <div class="text-xs-center">
-      <v-dialog v-if="dialogVisible" width="500">
+      <v-dialog v-model="dialogVisible" width="500">
         <v-card>
           <v-card-title primary-title>
             {{ dialogHeader }}
@@ -106,7 +107,20 @@ export default {
         .then((result) => {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
-            this.rides = result.data.msge;
+            //this.rides = result.data.msge;
+          } else {
+            this.showDialog("Sorry", result.data.msge);
+          }
+        })
+        .catch((err) => console.log("Failed", err));
+    },
+    driveRide(id) {
+      this.$axios
+        .put(`/drivers/${id}/${this.$store.state.currentUser}`)
+        .then((result) => {
+          if (result.data.ok) {
+            this.showDialog("Success", result.data.msge);
+            //this.rides = result.data.msge;
           } else {
             this.showDialog("Sorry", result.data.msge);
           }
