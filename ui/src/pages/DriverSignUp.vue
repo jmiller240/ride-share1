@@ -87,15 +87,8 @@ export default {
       this.dialogText = text;
       this.dialogVisible = true;
     },
-
-    // Invoked by the "Okay" button on the dialog; dismiss the dialog
-    // and navigate to the home page.
     hideDialog: function () {
       this.dialogVisible = false;
-      if (this.signedUp) {
-        // Only navigate away from the sign-up page if we were successful.
-        this.$router.push({ name: "home-page" });
-      }
     },
   },
 };
