@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app dark color="#464343">
-    <router-link v-bind:to="{ name: 'home-page' }">
-      <v-toolbar-title class="white--text">
+    <router-link color='#FFFFFF' v-bind:to="{ name: 'home-page' }">
+      <v-toolbar-title class="title">
         pdrivep
       </v-toolbar-title>
     </router-link>
@@ -23,7 +23,7 @@ export default {
   computed: {
     checkDriver() {
       this.$axios
-        .get(`drives/${state.currentUser}`)
+        .get(`drives/${this.$store.state.currentUser}`)
         .then(result => {
           if( result.data.msge === `You are not signed up to drive` ) {
             return true;
@@ -37,4 +37,8 @@ export default {
 }
 </script>
 
-
+<style>
+  .title {
+    font-family: "Copperplate", fantasy;
+  }
+</style>
