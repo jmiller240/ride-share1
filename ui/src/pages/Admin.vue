@@ -39,6 +39,7 @@
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on"
+                  @click='setNewVehicle'
                 >
                   New Vehicle
                 </v-btn>
@@ -106,7 +107,7 @@
                   <v-btn color="blue darken-1" text @click="close">
                     Cancel
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                  <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -216,6 +217,8 @@ export default {
         licenseState: "",
         licensePlate: "",
       },
+
+      newVehicle = false,
     };
   },
 
@@ -289,7 +292,7 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.vehicles[this.editedIndex], this.editedVehicle);
       } else {
-        if (formTitle === "New Vehicle") {
+        if( this.newVehicle === true ) {
           this.$axios
             .put(`/vehicles`, {
               make: this.editedVehicle.make,
@@ -304,6 +307,7 @@ export default {
               if (result.data.ok) {
                 this.showDialog("Success", result.data.msge);
                 this.vehicles.push(this.editedVehicle);
+                this.newVehicle = false;
               } else {
                 this.showDialog("Sorry", result.data.msge);
               }
@@ -332,6 +336,11 @@ export default {
         }
       }
       this.close();
+    },
+    newVehicle() {
+        if( this.newVehicle === false ) {
+            this.newVehicle = true;
+        }
     },
     showDialog: function (header, text) {
       this.dialogHeader = header;
