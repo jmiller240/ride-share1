@@ -20,8 +20,8 @@
             <td>{{ item.mpg }}</td>
             <td>{{ item.licenseState }}</td>
             <td>{{ item.licensePlate }}</td>
-            <v-icon small class='ml-2' color='secondary' @click='editVehicleItem(item)'>mdi-wrench</v-icon>
-            <v-icon small class='ml-2' color='secondary' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
+            <v-icon small class='ml-2' color='#464343' @click='editVehicleItem(item)'>mdi-wrench</v-icon>
+            <v-icon small class='ml-2' color='#464343' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
           </tr>
         </template>
 
@@ -34,7 +34,7 @@
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  color="secondary"
+                  color="#464343"
                   dark
                   class="mb-2"
                   v-bind="attrs"
@@ -107,7 +107,7 @@
                   <v-btn color="red" text @click="close">
                     Cancel
                   </v-btn>
-                  <v-btn color="accent" text @click="save"> Save </v-btn>
+                  <v-btn color="#464343" text @click="save"> Save </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -124,7 +124,7 @@
                     >Cancel</v-btn
                   >
                   <v-btn
-                    color="accent"
+                    color="#464343"
                     text
                     @click="deleteVehicleConfirm"
                     >OK</v-btn
@@ -162,7 +162,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="accent" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="#464343" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -218,7 +218,7 @@ export default {
         licensePlate: "",
       },
 
-      newVehicle = false,
+      newVehicle: false,
     };
   },
 
@@ -337,7 +337,7 @@ export default {
       }
       this.close();
     },
-    newVehicle() {
+    setNewVehicle() {
         if( this.newVehicle === false ) {
             this.newVehicle = true;
         }

@@ -28,7 +28,7 @@
         <p>{{ errorMessage }}</p>
       </div>
       <div>
-        <v-btn color="primary" text :to="{ name: 'home-page' }"
+        <v-btn color="#464343" text :to="{ name: 'home-page' }"
           >Search again</v-btn
         >
       </div>
@@ -49,7 +49,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="#464343" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

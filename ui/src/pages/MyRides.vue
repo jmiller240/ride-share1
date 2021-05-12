@@ -23,7 +23,7 @@
     </v-data-table>
     <div v-else>
       <p>{{ errorMessage }}</p>
-      <v-btn color="primary" text :to="{ name: 'home-page' }"
+      <v-btn color="#60944D" text :to="{ name: 'home-page' }"
         >Find a ride</v-btn
       >
     </div>
@@ -43,7 +43,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="#60944D" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
