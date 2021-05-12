@@ -56,6 +56,9 @@ export default new Vuex.Store({
     },
     newSearchType(state, searchTypeInput) {
       state.searchType = searchTypeInput;
+    },
+    changeCurrentUser(state, userNumber) {
+      state.currentUser = userNumber;
     }
   }
 });

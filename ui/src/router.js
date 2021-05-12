@@ -9,7 +9,6 @@ import MyRides from "./pages/MyRides.vue";
 import DriverDetails from "./pages/DriverDetails.vue";
 import Rides from "./pages/Rides.vue";
 import Admin from "./pages/Admin.vue"
-
 import DriverSignUp from "./pages/DriverSignUp.vue";
 
 Vue.use(Router);
