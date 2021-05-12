@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app dark color="#464343">
     <router-link v-bind:to="{ name: 'home-page' }">
-      <img class='mr-3' :src="'../../public/pdrivep.png'" height='40' />
+      <img :src="'../../public/pdrivep.png'" height='40' />
       <v-toolbar-title class="white--text">
         Ride-Share
       </v-toolbar-title>

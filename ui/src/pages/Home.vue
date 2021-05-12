@@ -38,7 +38,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+            <v-btn color="#60944D" text v-on:click="hideDialog">Okay</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -85,7 +85,7 @@
 <style scoped>
   #home {
     background: url("https://cars.usnews.com/pics/size/640x420/static/images/article/202010/128353/265689_XC60_Inscription_in_Pine_Grey_metallic_Cropped_640x420.jpg");
-    background-size: cover;
+    background-size: auto;
   }
 </style>
 

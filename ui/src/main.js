@@ -10,6 +10,15 @@ const axiosClient = axios.create({
 });
 Vue.prototype.$axios = axiosClient;
 
+/*const vuetify = new Vuetify({
+  theme: {
+    primary: "#FFFFFF",
+    secondary: "#464343",
+    accent: "#60944D"
+
+  }
+});*/
+
 new Vue({
   el: "#app",
   data: {
