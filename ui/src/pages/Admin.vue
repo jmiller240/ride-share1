@@ -20,7 +20,8 @@
             <td>{{ item.mpg }}</td>
             <td>{{ item.licenseState }}</td>
             <td>{{ item.licensePlate }}</td>
-            <v-btn>Delete</v-btn>
+            <v-icon small class='ml-2' color='secondary' @click='editVehicleItem(item)'>mdi-wrench</v-icon>
+            <v-icon small class='ml-2' color='secondary' @click='deleteVehicleItem(item)'>mdi-delete</v-icon>
           </tr>
         </template>
 
@@ -143,6 +144,7 @@
     </div>
     <!-- Display ride controls -->
     <div></div>
+
     <!-- display result dialog -->
     <div class="text-xs-center">
       <v-dialog v-model="dialogVisible" width="500">
