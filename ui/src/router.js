@@ -10,6 +10,7 @@ import DriverDetails from "./pages/DriverDetails.vue";
 import Rides from "./pages/Rides.vue";
 import Admin from "./pages/Admin.vue"
 import DriverSignUp from "./pages/DriverSignUp.vue";
+import User from "./pages/User.vue";
 
 Vue.use(Router);
 
@@ -27,6 +28,7 @@ export default new Router({
     { name: "accounts", path: "/accounts", component: Accounts },
     { name: "driverSignUp", path: "/driverSignUp", component: DriverSignUp },
     { name: 'admin', path: '/admin', component: Admin },
+    { name: 'user', path: '/user', component: User },
 
   ]
 });
