@@ -20,6 +20,7 @@ export default new Vuex.Store({
     searchKey: '',
     searchType: '',
     currentUser: 10,
+    isDriver: false,
   },
 
   // A "getter" returns a computed property from the store, similar
@@ -38,6 +39,9 @@ export default new Vuex.Store({
     },
     currentUser(state) {
       return state.currentUser;
+    },
+    isDriver(state) {
+      return state.isDriver;
     }
   },
 
@@ -59,6 +63,18 @@ export default new Vuex.Store({
     },
     changeCurrentUser(state, userNumber) {
       state.currentUser = userNumber;
+    },
+    checkDriver(state) {
+      this.$axios
+        .get(`drives/${state.currentUser}`)
+        .then(result => {
+          if( result.data.msge === `You are not signed up to drive` ) {
+            state.isDriver = false;
+          } else {
+            state.isDriver = true;
+          }
+        })
+        .catch(err => console.log(err));
     }
   }
 });
