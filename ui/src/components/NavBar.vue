@@ -12,6 +12,7 @@
     <v-btn text :to="{ name: 'myRides' }">My Rides</v-btn>
     <v-btn text :to="{ name: 'driverDetails' }">Driver Details</v-btn>
     <v-btn text :to="{ name: 'driverSignUp' }">Driver Sign Up</v-btn>
+    <v-btn text :to="{ name: 'admin' }">Admin</v-btn>
 
   </v-app-bar>
 </template>
