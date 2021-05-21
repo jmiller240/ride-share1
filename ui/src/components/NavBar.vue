@@ -1,9 +1,10 @@
 <template>
   <v-app-bar app dark color="#464343">
-    <router-link color='#FFFFFF' v-bind:to="{ name: 'home-page' }">
-      <v-toolbar-title class="white--text">
+    <router-link v-bind:to="{ name: 'home-page' }">
+      <v-img class="logo" src="http://cse.taylor.edu/~jmiller/pdrivep.PNG"/>
+      <!-- <v-toolbar-title class="white--text">
         pdrivep
-      </v-toolbar-title>
+      </v-toolbar-title> -->
     </router-link>
 
     <v-spacer></v-spacer>
@@ -36,3 +37,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .logo {
+    display: inline-block;
+    vertical-align: top;
+    height: 50%;
+    width: 30%;
+    position: relative;
+    z-index: -1;
+    /*background-image: "../../public/pdrivep.PNG"*/
+}
+</style>
